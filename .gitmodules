@@ -1,0 +1,3 @@
+[submodule "camera/bionic"]
+	path = camera/bionic
+	url = https://android.googlesource.com/platform/bionic
