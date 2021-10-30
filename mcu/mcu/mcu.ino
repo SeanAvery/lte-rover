@@ -47,12 +47,10 @@ void loop() {
   {
     char serialMsg[34];
     
-    // int throttleMsg = serialPort.parseInt();
     size_t msgLength = serialPort.readBytesUntil(escapeIndex, serialMsg, 34);
 
     char header;
     int value;
-
     sscanf(serialMsg, "%c%d", header, &value);
 
     if (value > 0) {
