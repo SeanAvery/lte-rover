@@ -1,0 +1,1 @@
+adb push camera /data
