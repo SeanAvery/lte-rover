@@ -1,4 +1,5 @@
 
+
 class Camera
 {
   private:
