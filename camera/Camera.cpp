@@ -1,5 +1,11 @@
 #include "Camera.h"
 
+
+#include "include/msm_cam_sensor.h"
+#include "include/msmb_camera.h"
+#include "include/msmb_isp.h"
+#include "include/msmb_ispif.h"
+
 #include <iostream>
 #include <fstream>
 #include <sys/ioctl.h>

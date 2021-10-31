@@ -4,8 +4,6 @@
 #include <linux/ioctl.h>
 #include <linux/videodev2.h>
 
-#define VIDIOC_MSM_CSID_IO_CFG _IOWR('V', BASE_VIDIOC_PRIVATE + 5, unsigned int)
-
 namespace params
 {
   char CSID_SUBSYSTEM[] = "/dev/v4l-subdev3";
