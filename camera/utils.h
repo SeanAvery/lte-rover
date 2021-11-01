@@ -2,6 +2,7 @@
 #include <sys/cdefs.h>
 #include <errno.h>
 #include <iostream>
+#include <thread>
 
 // __BEGIN_DECLS
 // extern int * __error(void);
@@ -41,4 +42,9 @@ static int cam_ioctl(int fd, unsigned long int request, void *arg, const char *l
     }
   }
   return err;
+}
+
+void sleep_for(const int milliseconds)
+{
+  std::this_thread::sleep_for(std::chrono::milliseconds(milliseconds));
 }
