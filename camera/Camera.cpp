@@ -58,7 +58,11 @@ int Camera::Init()
   // start camera stream
   // csid init
   csid_cfg_data.cfgtype = CSID_INIT;
-  // cam_ioctl(csid_fd, VIDIOC_MSM_CSID_IO_CFG, &csid_cfg_data, "init csid");
-  
+  cam_ioctl(csid_fd, VIDIOC_MSM_CSID_IO_CFG, &csid_cfg_data, "init csid");
+
+  // csiphy init
+  csiphy_cfg_data = {.cfgtype = CSIPHY_INIT};
+  cam_ioctl(csiphy_fd, VIDIOC_MSM_CSIPHY_IO_CFG, &csiphy_cfg_data, "init csiphy");
+
   return 0;
 }
