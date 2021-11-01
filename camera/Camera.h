@@ -15,7 +15,7 @@ namespace params
 class Camera
 {
   private:
-    int csi_fd;
+    int csid_fd;
     int csiphy_fd;
     int sensor_fd;
     int actuator_fd;
