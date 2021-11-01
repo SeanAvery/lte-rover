@@ -1,7 +1,7 @@
 #include <sys/ioctl.h>
 #include <sys/cdefs.h>
-#include <sys/_types/_errno_t.h>
 #include <errno.h>
+#include <iostream>
 
 // __BEGIN_DECLS
 // extern int * __error(void);
@@ -22,6 +22,23 @@
 static int cam_ioctl(int fd, unsigned long int request, void *arg, const char *log_msg = nullptr) {
   int err = HANDLE_EINTR(ioctl(fd, request, arg));
   if (err != 0 && log_msg) {
+    std::cout << log_msg << ": " << err << std::endl;
+    if (errno == EBADF)
+    {
+      std::cout << "bad file descriptor" << std::endl;
+    }
+    else if (errno == EFAULT)
+    {
+      std::cout << "inaccessible memory" << std::endl;
+    }
+    else if (errno == EINVAL)
+    {
+      std::cout << "request or argp is not valid" << std::endl;
+    }
+    else if (errno == ENOTTY)
+    {
+      std::cout << "fd is not associated with a character special device" << std::endl;
+    }
   }
   return err;
 }
