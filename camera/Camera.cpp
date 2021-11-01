@@ -15,30 +15,43 @@
 int Camera::Init()
 {
   // open subdevice files
-  csid_fd = open(params::CSID_SUBSYSTEM, O_RDWR | O_NONBLOCK);
-  csiphy_fd= open(params::CSIPHY_SUBSYSTEM, O_RDWR | O_NONBLOCK);
-  sensor_fd= open(params::SENSOR_SUBSYSTEM, O_RDWR | O_NONBLOCK);
-  actuator_fd = open(params::ACTUATOR_SUBSYSTEM, O_RDWR | O_NONBLOCK);
+  csid_fd = HANDLE_EINTR(open(params::CSID_SUBSYSTEM, O_RDWR | O_NONBLOCK));
+  csiphy_fd= HANDLE_EINTR(open(params::CSIPHY_SUBSYSTEM, O_RDWR | O_NONBLOCK));
+  isp_fd= HANDLE_EINTR(open(params::SENSOR_SUBSYSTEM, O_RDWR | O_NONBLOCK));
+  actuator_fd = HANDLE_EINTR(open(params::ACTUATOR_SUBSYSTEM, O_RDWR | O_NONBLOCK));
 
   struct csid_cfg_data csid_cfg_data = {};
   struct msm_actuator_cfg_data actuator_cfg_data = {};
 
+  // wait for camera sensor
+  
+  for (int i = 0; i < 10; i++)
+  {
+    sensor_fd = HANDLE_EINTR(open(params::SENSOR_SUBSYSTEM, O_RDWR | O_NONBLOCK));
+    if (sensor_fd >= 0)
+    {
+      break;
+    }
+    std::cout << "waiting for camera sensor..." << std::endl;
+    sleep_for(1000);
+  }
+
   // shutdown camera stream
-  // 1. release csiphy
+  // release csiphy
   struct msm_camera_csi_lane_params csi_lane_params = {0};
   csi_lane_params.csi_lane_mask = 0x1f;
   csiphy_cfg_data csiphy_cfg_data = { .cfg.csi_lane_params = &csi_lane_params, .cfgtype = CSIPHY_RELEASE};
   int err = cam_ioctl(csiphy_fd, VIDIOC_MSM_CSIPHY_IO_CFG, &csiphy_cfg_data, "release csiphy");
 
-  // 2. release csid
+  // release csid
   csid_cfg_data.cfgtype = CSID_RELEASE;
   cam_ioctl(csid_fd, VIDIOC_MSM_CSID_IO_CFG, &csid_cfg_data, "release csid");
 
-  // 3. power down camera sensor
+  // power down camera sensor
   struct sensorb_cfg_data sensorb_cfg_data = {.cfgtype = CFG_POWER_DOWN};
   cam_ioctl(sensor_fd, VIDIOC_MSM_SENSOR_CFG, &sensorb_cfg_data, "sensor power down");
   
-  // 4. actuator powerdown
+  // actuator powerdown
   actuator_cfg_data.cfgtype = CFG_ACTUATOR_POWERDOWN;
   cam_ioctl(actuator_fd, VIDIOC_MSM_ACTUATOR_CFG, &actuator_cfg_data, "actuator powerdown");
 
