@@ -16,8 +16,8 @@ max_throttle=300;
 if __name__ == "__main__":
   ser = serial.Serial("/dev/cu.usbserial-1130", 115200);
 
-  throttle = throttle_index + b' 300 ' + escape_char;
-  steering = steering_index + b' 70 ' + escape_char;
+  throttle = struct.pack(b'cic', throttle_index, 100, escape_char);
+  steering = struct.pack(b'cic', steering_index, 60, escape_char);
 
   # test sending command over the wire
   while True:
@@ -25,7 +25,7 @@ if __name__ == "__main__":
     log = ser.readline().decode('utf8')
     print(log)
     # update commands
-    ser.write(b't 300 #')
+    ser.write(throttle)
     time.sleep(0.1)
-    ser.write(b's 70 #')
+    ser.write(steering)
   
