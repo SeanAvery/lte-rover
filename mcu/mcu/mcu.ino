@@ -23,6 +23,8 @@ int maxThrottleReverse = 20;
 
 char throttleIndex = 't';
 char steeringIndex = 's';
+char steeringCenterIndex = 'c';
+char steeringRadiusIndex = 'r';
 char escapeIndex = '#';
 
 void setup() {
@@ -41,6 +43,8 @@ void setup() {
   motorEsc.attach(10);
   Serial.println("motor esc attatched");
 }
+
+
 
 void loop() {
   if (serialPort.available())
@@ -61,7 +65,17 @@ void loop() {
       {
         angle = value;
       }
+      else if (serialMsg[0] == steeringCenterIndex)
+      {
+        centerAngle = value;
+      }
+      else if (serialMsg[0] == steeringRadiusIndex)
+      {
+        minAngle = centerAngle - value;
+        maxAngle = centerAngle + value;
+      }
     }
+    Serial.println("yoooo");
   }
   
   motorEsc.write(throttle);
