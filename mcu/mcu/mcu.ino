@@ -44,30 +44,56 @@ void setup() {
   Serial.println("motor esc attatched");
 }
 
+bool steering_safe(int value)
+{
+  if (value > maxAngle) 
+  {
+    return false;
+  }
+  if (value < minAngle) 
+  {
+    return false;
+  }
+  return true;
+}
 
+bool throttle_safe(int value)
+{
+  if (value > maxThrottleFortward) 
+  {
+    return false;
+  }
+  if (value < maxThrottleReverse) 
+  {
+    return false;
+  }
+  return true;
+}
 
 void loop() {
   if (serialPort.available())
   {
     char serialMsg[7];
-    
     size_t msgLength = serialPort.readBytesUntil(escapeIndex, serialMsg, 34);
 
     char header;
     int value;
     sscanf(serialMsg, "%c%5d", header, &value);
 
-    if (value > 0) {
-     if (serialMsg[0] == throttleIndex) {
+    if (serialMsg[0] == throttleIndex) {
+      if (throttle_safe(value))
+      {
         throttle = value;
       }
-      else if (serialMsg[0] == steeringIndex)
+    }
+    else if (serialMsg[0] == steeringIndex)
+    {
+      if (steering_safe(value))
       {
         angle = value;
       }
     }
   }
-  
   motorEsc.write(throttle);
   steeringServo.write(angle);
 }
