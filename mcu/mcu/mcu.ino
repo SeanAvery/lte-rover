@@ -49,13 +49,13 @@ void setup() {
 void loop() {
   if (serialPort.available())
   {
-    char serialMsg[34];
+    char serialMsg[7];
     
     size_t msgLength = serialPort.readBytesUntil(escapeIndex, serialMsg, 34);
 
     char header;
     int value;
-    sscanf(serialMsg, "%c%d", header, &value);
+    sscanf(serialMsg, "%c%5d", header, &value);
 
     if (value > 0) {
      if (serialMsg[0] == throttleIndex) {
@@ -65,17 +65,7 @@ void loop() {
       {
         angle = value;
       }
-      else if (serialMsg[0] == steeringCenterIndex)
-      {
-        centerAngle = value;
-      }
-      else if (serialMsg[0] == steeringRadiusIndex)
-      {
-        minAngle = centerAngle - value;
-        maxAngle = centerAngle + value;
-      }
     }
-    Serial.println("yoooo");
   }
   
   motorEsc.write(throttle);
