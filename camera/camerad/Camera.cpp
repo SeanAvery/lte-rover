@@ -12,7 +12,7 @@
 #include <unistd.h>
 #include <fcntl.h> 
 
-int Camera::Init()
+int Camera::init()
 {
   // open subdevice files
   csid_fd = HANDLE_EINTR(open(params::CSID_SUBSYSTEM, O_RDWR | O_NONBLOCK));
@@ -63,6 +63,4 @@ int Camera::Init()
   // csiphy init
   csiphy_cfg_data = {.cfgtype = CSIPHY_INIT};
   cam_ioctl(csiphy_fd, VIDIOC_MSM_CSIPHY_IO_CFG, &csiphy_cfg_data, "init csiphy");
-
-  return 0;
 }

@@ -26,5 +26,8 @@ class Camera
     int Shutdown();
 
   public:
-    int Init();
+    void init();
+    void open();
+    void run();
+    void start();
 };

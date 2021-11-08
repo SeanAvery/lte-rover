@@ -5,7 +5,6 @@ int main() {
   std::cout << "Camera process starting" << std::endl;
 
   Camera cam;
-  cam.Init();
-  
+  cam.init();
   return 0;
 }
