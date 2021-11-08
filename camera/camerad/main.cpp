@@ -6,5 +6,6 @@ int main() {
 
   Camera cam;
   cam.camera_init();
+  cam.camera_open();
   return 0;
 }

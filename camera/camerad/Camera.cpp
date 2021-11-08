@@ -12,7 +12,7 @@
 #include <unistd.h>
 #include <fcntl.h> 
 
-int Camera::camera_init()
+void Camera::camera_init()
 {
   // open subdevice files
   csid_fd = HANDLE_EINTR(open(params::CSID_SUBSYSTEM, O_RDWR | O_NONBLOCK));
@@ -67,7 +67,7 @@ int Camera::camera_init()
 
 void Camera::camera_open()
 {
-  // msm_fd = HANDLE_EINTR(open(params::MSM_SUBSYTEM, O_RDWR | O_NONBLOCK));
-  // v4l_fd = HANDLE_EINTR(open(params::V4L_SUBSYTEM, O_RDWR | O_NONBLOCK));
-  // v4l_fd = HANDLE_EINTR(open(params::ISPIF_SUBSYTEM, O_RDWR | O_NONBLOCK));
+  msm_fd = HANDLE_EINTR(open(params::MSM_SUBSYSTEM, O_RDWR | O_NONBLOCK));
+  v4l_fd = HANDLE_EINTR(open(params::V4L_SUBSYSTEM, O_RDWR | O_NONBLOCK));
+  v4l_fd = HANDLE_EINTR(open(params::ISPIF_SUBSYSTEM, O_RDWR | O_NONBLOCK));
 }
