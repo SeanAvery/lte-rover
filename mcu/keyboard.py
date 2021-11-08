@@ -30,8 +30,8 @@ if __name__ == "__main__":
     steering_msg = format_msg(steering_index, steering)
     throttle_msg = format_msg(throttle_index, throttle)
     
-    time.sleep(0.1)
+    time.sleep(0.01)
     ser.write(steering_msg)
-    time.sleep(0.1)
+    time.sleep(0.01)
     ser.write(throttle_msg)
     
