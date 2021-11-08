@@ -11,6 +11,9 @@ namespace params
   char ISP_SUBSYSTEM[] = "/dev/v4l-subdev13";
   char ACTUATOR_SUBSYSTEM[] = "/dev/v4l-subdev7";
   char SENSOR_SUBSYSTEM[] = "/dev/v4l-subdev17";
+  char MSM_SUBSYSTEM[] = "/dev/media0";
+  char V4l_SUBSYSTEM[] = "/dev/video0";
+  char ISPIF_SUBSYSTEM[] = "/dev/v4l-subdev15";
 }
 
 class Camera
@@ -22,12 +25,16 @@ class Camera
     int sensor_fd;
     int actuator_fd;
 
+    int msm_fd;
+    int v4l_fd;
+    int ispif_fd;
+
     int BringUp();
     int Shutdown();
 
   public:
-    void init();
-    void open();
-    void run();
-    void start();
+    void camera_init();
+    void camera_open();
+    void camera_run();
+    void camera_start();
 };
