@@ -11,6 +11,7 @@ namespace params
   char ISP_SUBSYSTEM[] = "/dev/v4l-subdev13";
   char ACTUATOR_SUBSYSTEM[] = "/dev/v4l-subdev7";
   char SENSOR_SUBSYSTEM[] = "/dev/v4l-subdev17";
+  // char SENSOR_SUBSYSTEM[] = "/dev/v4l-subdev18";
   char MSM_SUBSYSTEM[] = "/dev/media0";
   char V4L_SUBSYSTEM[] = "/dev/video0";
   char ISPIF_SUBSYSTEM[] = "/dev/v4l-subdev15";

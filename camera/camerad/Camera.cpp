@@ -87,6 +87,12 @@ void Camera::camera_open()
   sensorb_cfg_data.cfgtype = CFG_SET_STOP_STREAM_SETTING;
   sensorb_cfg_data.cfg.setting = &stop_settings;
   cam_ioctl(sensor_fd, VIDIOC_MSM_SENSOR_CFG, &sensorb_cfg_data, "stop stream");
+
+  // sensor power up
+  sensorb_cfg_data = {.cfgtype = CFG_POWER_UP};
+  cam_ioctl(sensor_fd, VIDIOC_MSM_SENSOR_CFG, &sensorb_cfg_data, "sensor power up");
+
+  std::cout << "sensor_fd: " << sensor_fd << std::endl;
 }
 
 void Camera::camera_run()
