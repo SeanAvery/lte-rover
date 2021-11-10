@@ -5,12 +5,15 @@
 #include "include/msmb_camera.h"
 #include "include/msmb_isp.h"
 #include "include/msmb_ispif.h"
+#include "sensor_i2c.h"
+#include "include/msm_camsensor_sdk.h"
 
 #include <iostream>
 #include <fstream>
 #include <sys/ioctl.h>
 #include <unistd.h>
 #include <fcntl.h> 
+#include <iterator>
 
 void Camera::camera_init()
 {
@@ -72,6 +75,18 @@ void Camera::camera_open()
   // csiphy init
   csiphy_cfg_data = {.cfgtype = CSIPHY_INIT};
   cam_ioctl(csiphy_fd, VIDIOC_MSM_CSIPHY_IO_CFG, &csiphy_cfg_data, "init csiphy");
+
+  // sensor: stop stream
+   struct msm_camera_i2c_reg_setting stop_settings = {
+    .reg_setting = stop_reg_array,
+    .size = std::size(stop_reg_array),
+    .addr_type = MSM_CAMERA_I2C_WORD_ADDR,
+    .data_type = MSM_CAMERA_I2C_BYTE_DATA,
+    .delay = 0
+  };
+  sensorb_cfg_data.cfgtype = CFG_SET_STOP_STREAM_SETTING;
+  sensorb_cfg_data.cfg.setting = &stop_settings;
+  cam_ioctl(sensor_fd, VIDIOC_MSM_SENSOR_CFG, &sensorb_cfg_data, "stop stream");
 }
 
 void Camera::camera_run()
