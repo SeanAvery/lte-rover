@@ -151,7 +151,7 @@ void Camera::camera_init()
   sensorb_cfg_data = {.cfgtype = CFG_POWER_UP};
   cam_ioctl(sensor_fd, VIDIOC_MSM_SENSOR_CFG, &sensorb_cfg_data, "sensor power up");
 
-  // err = sensor_write_regs(s, init_array_ov8865, std::size(init_array_ov8865), MSM_CAMERA_I2C_BYTE_DATA);
+  err = sensor_write_regs(init_array_ov8865, std::size(init_array_ov8865), MSM_CAMERA_I2C_BYTE_DATA);
 
   std::cout << "ending" << std::endl;
   exit(0);
