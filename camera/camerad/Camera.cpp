@@ -1,12 +1,12 @@
 #include "Camera.h"
 #include "utils.h"
 
+#include "include/msm_camsensor_sdk.h"
+#include "sensor_i2c.h"
 #include "include/msm_cam_sensor.h"
 #include "include/msmb_camera.h"
 #include "include/msmb_isp.h"
 #include "include/msmb_ispif.h"
-#include "sensor_i2c.h"
-#include "include/msm_camsensor_sdk.h"
 
 #include <iostream>
 #include <fstream>
@@ -14,13 +14,9 @@
 #include <unistd.h>
 #include <fcntl.h> 
 #include <iterator>
+#include <assert.h>
 
 void Camera::camera_init()
-{
-  
-}
-
-void Camera::camera_open()
 {
   msm_fd = HANDLE_EINTR(open(params::MSM_SUBSYSTEM, O_RDWR | O_NONBLOCK));
   v4l_fd = HANDLE_EINTR(open(params::V4L_SUBSYSTEM, O_RDWR | O_NONBLOCK));
@@ -32,11 +28,55 @@ void Camera::camera_open()
   isp_fd= HANDLE_EINTR(open(params::SENSOR_SUBSYSTEM, O_RDWR | O_NONBLOCK));
   actuator_fd = HANDLE_EINTR(open(params::ACTUATOR_SUBSYSTEM, O_RDWR | O_NONBLOCK));
 
-  struct csid_cfg_data csid_cfg_data = {};
+  // struct csid_cfg_data csid_cfg_data = {};
   struct msm_actuator_cfg_data actuator_cfg_data = {};
 
-  // wait for camera sensor
+  // sensor init
+  sensorinit_fd =  HANDLE_EINTR(open(params::SENSORINIT_SUBSYSTEM, O_RDWR | O_NONBLOCK));
   
+  // slave info
+  msm_camera_sensor_slave_info info = {
+    .sensor_name = "ov8865_sunny",
+    .eeprom_name = "ov8865_plus",
+    .actuator_name = "",
+    .ois_name = "",
+    .flash_name = "",
+    .camera_id = CAMERA_2,
+    .slave_addr = 108,
+    .i2c_freq_mode = I2C_FAST_MODE,
+    .addr_type = MSM_CAMERA_I2C_WORD_ADDR,
+    .sensor_id_info = {.sensor_id_reg_addr = 12299, .sensor_id = 34917, .module_id = 2},
+    .power_setting_array = {
+      .power_setting_a = {
+        {.seq_type = SENSOR_GPIO, .delay = 5},
+        {.seq_type = SENSOR_VREG, .seq_val = 1},
+        {.seq_type = SENSOR_VREG, .seq_val = 2},
+        {.seq_type = SENSOR_VREG},
+        {.seq_type = SENSOR_CLK, .config_val = 24000000, .delay = 1},
+        {.seq_type = SENSOR_GPIO, .config_val = 2, .delay = 1},
+      },
+      .size = 6,
+      .power_down_setting_a = {
+        {.seq_type = SENSOR_GPIO, .delay = 5},
+        {.seq_type = SENSOR_CLK, .delay = 1},
+        {.seq_type = SENSOR_VREG},
+        {.seq_type = SENSOR_VREG, .seq_val = 1},
+        {.seq_type = SENSOR_VREG, .seq_val = 2, .delay = 1},
+      },
+      .size_down = 5,
+    },
+    .is_init_params_valid = 0,
+    .sensor_init_params = {.modes_supported = 1, .position = FRONT_CAMERA_B, .sensor_mount_angle = 270},
+    .output_format = MSM_SENSOR_BAYER,
+  };
+  info.power_setting_array.power_setting = &info.power_setting_array.power_setting_a[0];
+  info.power_setting_array.power_down_setting = &info.power_setting_array.power_down_setting_a[0];
+  sensor_init_cfg_data sensor_init_cfg = {.cfgtype = CFG_SINIT_PROBE, .cfg.setting = &info};
+
+  int sensorinit_err = cam_ioctl(sensorinit_fd, VIDIOC_MSM_SENSOR_INIT_CFG, &sensor_init_cfg, "sensor init cfg");
+  assert(sensorinit_err >= 0);
+
+  // wait for camera sensor
   for (int i = 0; i < 10; i++)
   {
     sensor_fd = HANDLE_EINTR(open(params::SENSOR_SUBSYSTEM, O_RDWR | O_NONBLOCK));
@@ -46,7 +86,7 @@ void Camera::camera_open()
     }
     std::cout << "waiting for camera sensor..." << std::endl;
     sleep_for(1000);
-  }
+  } 
 
   // shutdown camera stream
   // release csiphy
@@ -54,15 +94,33 @@ void Camera::camera_open()
   csi_lane_params.csi_lane_mask = 0x1f;
   csiphy_cfg_data csiphy_cfg_data = { .cfg.csi_lane_params = &csi_lane_params, .cfgtype = CSIPHY_RELEASE};
   int err = cam_ioctl(csiphy_fd, VIDIOC_MSM_CSIPHY_IO_CFG, &csiphy_cfg_data, "release csiphy");
+ 
 
   // release csid
+  // csid_cfg_data csid_cfg_data = { .cfgtype = CSID_RELEASE };
+
+  // struct csid_cfg_data csid_cfg_data = {.cfgtype = CSID_RELEASE};
+  struct csid_cfg_data csid_cfg_data = {};
+
+  // csid_cfg_data.cfgtype = CSID_RELEASE;
   csid_cfg_data.cfgtype = CSID_RELEASE;
+  // std::cout << "csid release: " << csid_cfg_data.cfgtype << std::endl;
+  // std::cout << "VIDIOC_MSM_CSID_IO_CFG: " << VIDIOC_MSM_CSID_IO_CFG << std::endl;
+  // cam_ioctl(csid_fd, VIDIOC_MSM_CSID_IO_CFG, &csid_cfg_data, "release csid");
+  // cam_ioctl(csid_fd, VIDIOC_MSM_CSID_IO_CFG, &csid_cfg_data, "release csid");
   cam_ioctl(csid_fd, VIDIOC_MSM_CSID_IO_CFG, &csid_cfg_data, "release csid");
 
+
+  std::cout << "ending" << std::endl;
+  exit(0);
+
   // power down camera sensor
+
+  std::cout << "sensor power down" << std::endl;
+
   struct sensorb_cfg_data sensorb_cfg_data = {.cfgtype = CFG_POWER_DOWN};
   cam_ioctl(sensor_fd, VIDIOC_MSM_SENSOR_CFG, &sensorb_cfg_data, "sensor power down");
-  
+
   // actuator powerdown
   actuator_cfg_data.cfgtype = CFG_ACTUATOR_POWERDOWN;
   cam_ioctl(actuator_fd, VIDIOC_MSM_ACTUATOR_CFG, &actuator_cfg_data, "actuator powerdown");
@@ -77,13 +135,14 @@ void Camera::camera_open()
   cam_ioctl(csiphy_fd, VIDIOC_MSM_CSIPHY_IO_CFG, &csiphy_cfg_data, "init csiphy");
 
   // sensor: stop stream
-   struct msm_camera_i2c_reg_setting stop_settings = {
+  struct msm_camera_i2c_reg_setting stop_settings = {
     .reg_setting = stop_reg_array,
     .size = std::size(stop_reg_array),
     .addr_type = MSM_CAMERA_I2C_WORD_ADDR,
     .data_type = MSM_CAMERA_I2C_BYTE_DATA,
     .delay = 0
   };
+
   sensorb_cfg_data.cfgtype = CFG_SET_STOP_STREAM_SETTING;
   sensorb_cfg_data.cfg.setting = &stop_settings;
   cam_ioctl(sensor_fd, VIDIOC_MSM_SENSOR_CFG, &sensorb_cfg_data, "stop stream");
@@ -92,7 +151,17 @@ void Camera::camera_open()
   sensorb_cfg_data = {.cfgtype = CFG_POWER_UP};
   cam_ioctl(sensor_fd, VIDIOC_MSM_SENSOR_CFG, &sensorb_cfg_data, "sensor power up");
 
-  std::cout << "sensor_fd: " << sensor_fd << std::endl;
+
+  // err = sensor_write_regs(s, init_array_ov8865, std::size(init_array_ov8865), MSM_CAMERA_I2C_BYTE_DATA);
+
+  std::cout << "ending" << std::endl;
+  exit(0);
+
+}
+
+void Camera::camera_open()
+{
+    // std::cout << "sensor_fd: " << sensor_fd << std::endl;
 }
 
 void Camera::camera_run()

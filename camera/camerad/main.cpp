@@ -6,7 +6,7 @@ int main() {
 
   Camera cam;
   cam.camera_init();
-  cam.camera_open();
+  // cam.camera_open();
   
   std::thread camera_thread(&Camera::camera_run, &cam);
   camera_thread.join();

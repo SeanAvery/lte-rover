@@ -23,7 +23,7 @@
 static int cam_ioctl(int fd, unsigned long int request, void *arg, const char *log_msg = nullptr) {
   int err = HANDLE_EINTR(ioctl(fd, request, arg));
   if (err != 0 && log_msg) {
-    std::cout << log_msg << ": " << err << std::endl;
+    std::cout << log_msg << " : " << err << std::endl;
     if (errno == EBADF)
     {
       std::cout << "bad file descriptor" << std::endl;

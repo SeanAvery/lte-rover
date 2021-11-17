@@ -12,6 +12,7 @@ namespace params
   char ACTUATOR_SUBSYSTEM[] = "/dev/v4l-subdev7";
   char SENSOR_SUBSYSTEM[] = "/dev/v4l-subdev17";
   // char SENSOR_SUBSYSTEM[] = "/dev/v4l-subdev18";
+  char SENSORINIT_SUBSYSTEM[] = "/dev/v4l-subdev11";
   char MSM_SUBSYSTEM[] = "/dev/media0";
   char V4L_SUBSYSTEM[] = "/dev/video0";
   char ISPIF_SUBSYSTEM[] = "/dev/v4l-subdev15";
@@ -25,6 +26,7 @@ class Camera
     int isp_fd;
     int sensor_fd;
     int actuator_fd;
+    int sensorinit_fd;
 
     int msm_fd;
     int v4l_fd;
