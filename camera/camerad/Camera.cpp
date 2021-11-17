@@ -1,12 +1,12 @@
 #include "Camera.h"
 #include "utils.h"
 
-#include "include/msm_camsensor_sdk.h"
-#include "sensor_i2c.h"
-#include "include/msm_cam_sensor.h"
-#include "include/msmb_camera.h"
-#include "include/msmb_isp.h"
-#include "include/msmb_ispif.h"
+// #include "include/msm_camsensor_sdk.h"
+// #include "sensor_i2c.h"
+// #include "include/msm_cam_sensor.h"
+// #include "include/msmb_camera.h"
+// #include "include/msmb_isp.h"
+// #include "include/msmb_ispif.h"
 
 #include <iostream>
 #include <fstream>
@@ -151,7 +151,6 @@ void Camera::camera_init()
   sensorb_cfg_data = {.cfgtype = CFG_POWER_UP};
   cam_ioctl(sensor_fd, VIDIOC_MSM_SENSOR_CFG, &sensorb_cfg_data, "sensor power up");
 
-
   // err = sensor_write_regs(s, init_array_ov8865, std::size(init_array_ov8865), MSM_CAMERA_I2C_BYTE_DATA);
 
   std::cout << "ending" << std::endl;
@@ -168,3 +167,19 @@ void Camera::camera_run()
 {
  
 }
+
+
+int Camera::sensor_write_regs(struct msm_camera_i2c_reg_array* arr, size_t size, msm_camera_i2c_data_type data_type)
+{
+  struct msm_camera_i2c_reg_setting out_settings = {
+    .reg_setting = arr,
+    .size = (uint16_t)size,
+    .addr_type = MSM_CAMERA_I2C_WORD_ADDR,
+    .data_type = data_type,
+    .delay = 0,
+  };
+
+  sensorb_cfg_data cfg_data = {.cfgtype = CFG_WRITE_I2C_ARRAY, .cfg.setting = &out_settings};
+  return HANDLE_EINTR(ioctl(sensor_fd, VIDIOC_MSM_SENSOR_CFG, &cfg_data));
+}
+

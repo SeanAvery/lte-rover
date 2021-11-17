@@ -4,6 +4,13 @@
 #include <linux/ioctl.h>
 #include <linux/videodev2.h>
 
+#include "include/msm_camsensor_sdk.h"
+#include "sensor_i2c.h"
+#include "include/msm_cam_sensor.h"
+#include "include/msmb_camera.h"
+#include "include/msmb_isp.h"
+#include "include/msmb_ispif.h"
+
 namespace params
 {
   char CSID_SUBSYSTEM[] = "/dev/v4l-subdev3";
@@ -40,4 +47,5 @@ class Camera
     void camera_open();
     void camera_run();
     void camera_start();
+    int sensor_write_regs(struct msm_camera_i2c_reg_array* arr, size_t size, msm_camera_i2c_data_type data_type);
 };
