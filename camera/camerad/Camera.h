@@ -4,6 +4,8 @@
 #include <linux/ioctl.h>
 #include <linux/videodev2.h>
 
+#include "utils.h"
+
 #include "include/msm_camsensor_sdk.h"
 #include "sensor_i2c.h"
 #include "include/msm_cam_sensor.h"
@@ -33,7 +35,7 @@ class Camera
     int isp_fd;
     int sensor_fd;
     int actuator_fd;
-    int sensorinit_fd;
+    unique_fd sensorinit_fd;
 
     int msm_fd;
     int v4l_fd;

@@ -3,6 +3,7 @@
 #include <errno.h>
 #include <iostream>
 #include <thread>
+#include <unistd.h>
 
 // __BEGIN_DECLS
 // extern int * __error(void);
@@ -48,3 +49,17 @@ void sleep_for(const int milliseconds)
 {
   std::this_thread::sleep_for(std::chrono::milliseconds(milliseconds));
 }
+
+struct unique_fd {
+  unique_fd(int fd = -1) : fd_(fd) {}
+  unique_fd& operator=(unique_fd&& uf) {
+    fd_ = uf.fd_;
+    uf.fd_ = -1;
+    return *this;
+  }
+  ~unique_fd() {
+    if (fd_ != -1) close(fd_);
+  }
+  operator int() const { return fd_; }
+  int fd_;
+};
