@@ -25,7 +25,7 @@ void Camera::camera_init()
   csid_fd = HANDLE_EINTR(open(params::CSID_SUBSYSTEM, O_RDWR | O_NONBLOCK));
   assert(csid_fd >= 0);
   csiphy_fd= HANDLE_EINTR(open(params::CSIPHY_SUBSYSTEM, O_RDWR | O_NONBLOCK));
-  isp_fd= HANDLE_EINTR(open(params::SENSOR_SUBSYSTEM, O_RDWR | O_NONBLOCK));
+  isp_fd= HANDLE_EINTR(open(params::ISP_SUBSYSTEM, O_RDWR | O_NONBLOCK));
   actuator_fd = HANDLE_EINTR(open(params::ACTUATOR_SUBSYSTEM, O_RDWR | O_NONBLOCK));
 
   // struct csid_cfg_data csid_cfg_data = {};
@@ -191,6 +191,11 @@ void Camera::camera_init()
   csid_cfg_data.cfgtype = CSID_CFG;
   csid_cfg_data.cfg.csid_params = &csid_params;
   cam_ioctl(csid_fd, VIDIOC_MSM_CSID_IO_CFG, &csid_cfg_data, "csid configure");
+
+  // smmu attach
+  std::cout << "attaching smmu " << isp_fd << std::endl;
+  msm_vfe_smmu_attach_cmd smmu_attach_cmd = {.security_mode = 0, .iommu_attach_mode = IOMMU_ATTACH};
+  cam_ioctl(isp_fd, VIDIOC_MSM_ISP_SMMU_ATTACH, &smmu_attach_cmd, "isp smmu attach");
 
   exit(0);
 }
