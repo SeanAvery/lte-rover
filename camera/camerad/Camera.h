@@ -13,6 +13,9 @@
 #include "include/msmb_isp.h"
 #include "include/msmb_ispif.h"
 
+#define FRAME_BUF_COUNT 4
+#define METADATA_BUF_COUNT 4
+
 namespace params
 {
   char CSID_SUBSYSTEM[] = "/dev/v4l-subdev3";
@@ -51,3 +54,9 @@ class Camera
     void camera_start();
     int sensor_write_regs(struct msm_camera_i2c_reg_array* arr, size_t size, msm_camera_i2c_data_type data_type);
 };
+
+typedef struct StreamState {
+  struct msm_isp_buf_request buf_request;
+  struct msm_vfe_axi_stream_request_cmd stream_req;
+  struct msm_isp_qbuf_info qbuf_info[FRAME_BUF_COUNT];
+} StreamState;
