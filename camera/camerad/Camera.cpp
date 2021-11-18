@@ -156,7 +156,17 @@ void Camera::camera_init()
   std::cout << "actuator powerup" << std::endl;
   actuator_cfg_data.cfgtype = CFG_ACTUATOR_POWERUP;
   cam_ioctl(actuator_fd, VIDIOC_MSM_ACTUATOR_CFG, &actuator_cfg_data, "actuator powerup");
+  std::cout << "actuator init" << std::endl;
+  actuator_cfg_data.cfgtype = CFG_ACTUATOR_INIT;
+  cam_ioctl(actuator_fd, VIDIOC_MSM_ACTUATOR_CFG, &actuator_cfg_data, "actuator init");
 
+  // configure csiphy
+  std::cout << "configuring csiphy" << std::endl;
+  struct msm_camera_csiphy_params csiphy_params = {};
+  // csiphy_params = {.lane_cnt = 4, .settle_cnt = 24, .lane_mask = 0x1f, .csid_core = 2};
+  csiphy_cfg_data.cfgtype = CSIPHY_CFG;
+  csiphy_cfg_data.cfg.csiphy_params = &csiphy_params;
+  cam_ioctl(csiphy_fd, VIDIOC_MSM_CSIPHY_IO_CFG, &csiphy_cfg_data, "csiphy configure");
   exit(0);
 }
 
