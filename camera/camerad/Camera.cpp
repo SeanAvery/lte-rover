@@ -163,10 +163,35 @@ void Camera::camera_init()
   // configure csiphy
   std::cout << "configuring csiphy" << std::endl;
   struct msm_camera_csiphy_params csiphy_params = {};
-  // csiphy_params = {.lane_cnt = 4, .settle_cnt = 24, .lane_mask = 0x1f, .csid_core = 2};
+  csiphy_params = {.lane_cnt = 4, .settle_cnt = 24, .lane_mask = 0x1f, .csid_core = 2};
   csiphy_cfg_data.cfgtype = CSIPHY_CFG;
   csiphy_cfg_data.cfg.csiphy_params = &csiphy_params;
   cam_ioctl(csiphy_fd, VIDIOC_MSM_CSIPHY_IO_CFG, &csiphy_cfg_data, "csiphy configure");
+
+  // configure csid
+  std::cout << "configuring csid" << std::endl;
+#define CSI_STATS 0x35
+#define CSI_PD 0x36
+  struct msm_camera_csid_params csid_params = {
+    .lane_cnt = 4,
+    .lane_assign = 0x4320,
+    .phy_sel = (uint8_t)(0),
+    .lut_params.num_cid = (uint8_t)(3),
+    .lut_params.vc_cfg_a = {
+      {.cid = 0, .dt = CSI_RAW10, .decode_format = CSI_DECODE_10BIT},
+      {.cid = 1, .dt = CSI_PD, .decode_format = CSI_DECODE_10BIT},
+      {.cid = 2, .dt = CSI_STATS, .decode_format = CSI_DECODE_10BIT},
+    },
+  };
+
+  csid_params.lut_params.vc_cfg[0] = &csid_params.lut_params.vc_cfg_a[0];
+  csid_params.lut_params.vc_cfg[1] = &csid_params.lut_params.vc_cfg_a[1];
+  csid_params.lut_params.vc_cfg[2] = &csid_params.lut_params.vc_cfg_a[2];
+
+  csid_cfg_data.cfgtype = CSID_CFG;
+  csid_cfg_data.cfg.csid_params = &csid_params;
+  cam_ioctl(csid_fd, VIDIOC_MSM_CSID_IO_CFG, &csid_cfg_data, "csid configure");
+
   exit(0);
 }
 
