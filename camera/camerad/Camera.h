@@ -44,6 +44,8 @@ class Camera
     int v4l_fd;
     int ispif_fd;
 
+    uint32_t pixel_clock;
+
     int BringUp();
     int Shutdown();
 

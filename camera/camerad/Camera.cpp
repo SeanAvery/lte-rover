@@ -14,6 +14,7 @@
 #include <fcntl.h> 
 #include <iterator>
 #include <assert.h>
+#include <string.h>
 
 void Camera::camera_init()
 {
@@ -196,6 +197,12 @@ void Camera::camera_init()
   std::cout << "attaching smmu " << isp_fd << std::endl;
   msm_vfe_smmu_attach_cmd smmu_attach_cmd = {.security_mode = 0, .iommu_attach_mode = IOMMU_ATTACH};
   cam_ioctl(isp_fd, VIDIOC_MSM_ISP_SMMU_ATTACH, &smmu_attach_cmd, "isp smmu attach");
+
+  // configure isp stream
+  struct msm_vfe_input_cfg input_cfg = {};
+  StreamState *ss;
+
+  memset(&input_cfg, 0, sizeof(msm_vfe_input_cfg));
 
   exit(0);
 }
