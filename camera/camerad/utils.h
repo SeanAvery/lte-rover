@@ -41,6 +41,10 @@ static int cam_ioctl(int fd, unsigned long int request, void *arg, const char *l
     {
       std::cout << "fd is not associated with a character special device" << std::endl;
     }
+    else
+    {
+      std::cout << "unrecognized ioctl errno: " << errno << std::endl;
+    } 
   }
   return err;
 }

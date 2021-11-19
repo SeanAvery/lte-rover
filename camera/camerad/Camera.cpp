@@ -199,11 +199,37 @@ void Camera::camera_init()
   cam_ioctl(isp_fd, VIDIOC_MSM_ISP_SMMU_ATTACH, &smmu_attach_cmd, "isp smmu attach");
 
   // configure isp stream
+  std::cout << "configuring input" << std::endl;
   struct msm_vfe_input_cfg input_cfg = {};
   StreamState *ss;
 
   memset(&input_cfg, 0, sizeof(msm_vfe_input_cfg));
+  
+  input_cfg.input_src = (msm_vfe_input_src)(VFE_RAW_0 + 1);
+  input_cfg.input_pix_clk = pixel_clock;
+  input_cfg.d.rdi_cfg.cid = 0;
+  input_cfg.d.rdi_cfg.frame_based = 1;
+  err = ioctl(isp_fd, VIDIOC_MSM_ISP_INPUT_CFG, &input_cfg);
+  std::cout << "configure error: " << err << std::endl;
 
+
+  ss->stream_req.session_id = 2;
+  ss->stream_req.stream_id = ISP_NATIVE_BUF_BIT | (1 + 0);
+  ss->stream_req.output_format = v4l2_fourcc('R', 'G', '1', '0');
+
+  ss->stream_req.axi_stream_handle = 0;
+  
+  ss->stream_req.stream_src = (msm_vfe_axi_stream_src)(RDI_INTF_0 + 0);
+
+  ss->stream_req.frame_skip_pattern = EVERY_3FRAME;
+  
+  ss->stream_req.frame_base = 1;
+  ss->stream_req .buf_divert = 1;
+
+  std::cout << "configuring stream" << std::endl;
+  err = cam_ioctl(isp_fd, VIDIOC_MSM_ISP_REQUEST_STREAM, &ss->stream_req, "configure stream");
+  std::cout << "stream request error: " << err << std::endl;
+  
   exit(0);
 }
 
