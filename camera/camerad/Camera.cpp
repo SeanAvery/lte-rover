@@ -229,6 +229,16 @@ void Camera::camera_init()
   std::cout << "configuring stream" << std::endl;
   err = cam_ioctl(isp_fd, VIDIOC_MSM_ISP_REQUEST_STREAM, &ss->stream_req, "configure stream");
   std::cout << "stream request error: " << err << std::endl;
+
+  // isp request_buf
+  ss->buf_request.session_id = ss->stream_req.session_id;
+  ss->buf_request.stream_id = ss->stream_req.stream_id;
+  ss->buf_request.num_buf = FRAME_BUF_COUNT;
+  ss->buf_request.buf_type = ISP_PRIVATE_BUF;
+  ss->buf_request.handle = 0;
+  cam_ioctl(isp_fd, VIDIOC_MSM_ISP_REQUEST_BUF, &ss->buf_request, "isp request buf");
+  std::cout << "got buf handle: " << ss->buf_request.handle << std::endl;
+  
   
   exit(0);
 }
