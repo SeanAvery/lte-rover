@@ -18,6 +18,11 @@
 
 void Camera::camera_init()
 {
+
+}
+
+void Camera::camera_open()
+{
   msm_fd = HANDLE_EINTR(open(params::MSM_SUBSYSTEM, O_RDWR | O_NONBLOCK));
   v4l_fd = HANDLE_EINTR(open(params::V4L_SUBSYSTEM, O_RDWR | O_NONBLOCK));
   v4l_fd = HANDLE_EINTR(open(params::ISPIF_SUBSYSTEM, O_RDWR | O_NONBLOCK));
@@ -185,6 +190,7 @@ void Camera::camera_init()
     },
   };
 
+  
   csid_params.lut_params.vc_cfg[0] = &csid_params.lut_params.vc_cfg_a[0];
   csid_params.lut_params.vc_cfg[1] = &csid_params.lut_params.vc_cfg_a[1];
   csid_params.lut_params.vc_cfg[2] = &csid_params.lut_params.vc_cfg_a[2];
@@ -203,22 +209,27 @@ void Camera::camera_init()
   struct msm_vfe_input_cfg input_cfg = {};
   StreamState *ss;
 
-  memset(&input_cfg, 0, sizeof(msm_vfe_input_cfg));
+  memset(&input_cfg, 0, sizeof(struct msm_vfe_input_cfg));
   
   input_cfg.input_src = (msm_vfe_input_src)(VFE_RAW_0 + 1);
   input_cfg.input_pix_clk = pixel_clock;
   input_cfg.d.rdi_cfg.cid = 0;
   input_cfg.d.rdi_cfg.frame_based = 1;
+
   err = ioctl(isp_fd, VIDIOC_MSM_ISP_INPUT_CFG, &input_cfg);
   std::cout << "configure error: " << err << std::endl;
 
+std::cout << "ending" << std::endl;
+  exit(0);
 
   ss->stream_req.session_id = 2;
+
   ss->stream_req.stream_id = ISP_NATIVE_BUF_BIT | (1 + 0);
+
   ss->stream_req.output_format = v4l2_fourcc('R', 'G', '1', '0');
 
   ss->stream_req.axi_stream_handle = 0;
-  
+ 
   ss->stream_req.stream_src = (msm_vfe_axi_stream_src)(RDI_INTF_0 + 0);
 
   ss->stream_req.frame_skip_pattern = EVERY_3FRAME;
@@ -226,9 +237,12 @@ void Camera::camera_init()
   ss->stream_req.frame_base = 1;
   ss->stream_req .buf_divert = 1;
 
+
+
   std::cout << "configuring stream" << std::endl;
   err = cam_ioctl(isp_fd, VIDIOC_MSM_ISP_REQUEST_STREAM, &ss->stream_req, "configure stream");
   std::cout << "stream request error: " << err << std::endl;
+
 
   // isp request_buf
   ss->buf_request.session_id = ss->stream_req.session_id;
@@ -236,7 +250,7 @@ void Camera::camera_init()
   ss->buf_request.num_buf = FRAME_BUF_COUNT;
   ss->buf_request.buf_type = ISP_PRIVATE_BUF;
   ss->buf_request.handle = 0;
-  cam_ioctl(isp_fd, VIDIOC_MSM_ISP_REQUEST_BUF, &ss->buf_request, "isp request buf");
+  // cam_ioctl(isp_fd, VIDIOC_MSM_ISP_REQUEST_BUF, &ss->buf_request, "isp request buf");
   std::cout << "got buf handle: " << ss->buf_request.handle << std::endl;
   
   // enqueue buffers
@@ -256,16 +270,21 @@ void Camera::camera_init()
   update_cmd.update_info[0].user_stream_id = ss->stream_req.stream_id;
   update_cmd.update_info[0].stream_handle = ss->stream_req.axi_stream_handle;
   update_cmd.update_type = UPDATE_STREAM_ADD_BUFQ;
-  cam_ioctl(isp_fd, VIDIOC_MSM_ISP_UPDATE_STREAM, &update_cmd, "isp update stream");
+  // cam_ioctl(isp_fd, VIDIOC_MSM_ISP_UPDATE_STREAM, &update_cmd, "isp update stream");
 
   // start streams
-  
-  exit(0);
-}
 
-void Camera::camera_open()
-{
-    // std::cout << "sensor_fd: " << sensor_fd << std::endl;
+  // subscribe event
+  // sub.id = 0;
+  // sub.type = 0x1ff;
+
+  stream_cfg.cmd = START_STREAM;
+  stream_cfg.num_streams = 1;
+  stream_cfg.stream_handle[0] = ss->stream_req.axi_stream_handle;
+  
+  // cam_ioctl(isp_fd, VIDIOC_MSM_ISP_CFG_STREAM, &stream_cfg, "isp start stream");
+
+  exit(0);
 }
 
 void Camera::camera_run()

@@ -46,6 +46,8 @@ class Camera
 
     uint32_t pixel_clock;
 
+    struct msm_vfe_axi_stream_cfg_cmd stream_cfg;
+
     int BringUp();
     int Shutdown();
 
