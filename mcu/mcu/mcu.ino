@@ -12,7 +12,7 @@ SoftwareSerial serialPort(0, 1);
 
 // global variables
 int angle = 90;
-int throttle = 90;
+int throttle = 0;
 int minAngle = 60;
 int maxAngle = 120;
 int centerAngle = 90;
@@ -38,7 +38,7 @@ void setup() {
   Serial.println("serial port is setup");
 
   // setup pwm pins for steering and motor control
-  // steeringServo.attach(9);
+  steeringServo.attach(9);
   Serial.println("steering servo attatched");
   motorEsc.attach(10);
   Serial.println("motor esc attatched");
@@ -82,7 +82,6 @@ void loop() {
     sscanf(serialMsg, "%c%5d", header, &value);
 
     if (serialMsg[0] == throttleIndex) {
-      Serial.println(value);
       if (throttle_safe(value))
       {
         throttle = value;
@@ -96,6 +95,7 @@ void loop() {
       }
     }
   }
+  Serial.println(throttle);
   motorEsc.write(throttle);
   steeringServo.write(angle);
 }
