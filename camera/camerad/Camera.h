@@ -30,6 +30,13 @@ namespace params
   char ISPIF_SUBSYSTEM[] = "/dev/v4l-subdev15";
 }
 
+typedef struct StreamState {
+  struct msm_isp_buf_request buf_request;
+  struct msm_vfe_axi_stream_request_cmd stream_req;
+  struct msm_isp_qbuf_info qbuf_info[FRAME_BUF_COUNT];
+  // VisionBuf *bufs;
+} StreamState;
+
 class Camera
 {
   private:
@@ -48,6 +55,8 @@ class Camera
 
     struct msm_vfe_axi_stream_cfg_cmd stream_cfg;
 
+    StreamState ss[3];
+
     int BringUp();
     int Shutdown();
 
@@ -60,9 +69,4 @@ class Camera
     int sensor_write_regs(struct msm_camera_i2c_reg_array* arr, size_t size, msm_camera_i2c_data_type data_type);
 };
 
-typedef struct StreamState {
-  struct msm_isp_buf_request buf_request;
-  struct msm_vfe_axi_stream_request_cmd stream_req;
-  struct msm_isp_qbuf_info qbuf_info[FRAME_BUF_COUNT];
-  // VisionBuf *bufs;
-} StreamState;
+
