@@ -239,6 +239,26 @@ void Camera::camera_init()
   cam_ioctl(isp_fd, VIDIOC_MSM_ISP_REQUEST_BUF, &ss->buf_request, "isp request buf");
   std::cout << "got buf handle: " << ss->buf_request.handle << std::endl;
   
+  // enqueue buffers
+  for (int j = 0; j < ss->buf_request.num_buf; j++)
+  {
+    ss->qbuf_info[j].handle = ss->buf_request.handle;
+    ss->qbuf_info[j].buf_idx = j;
+    ss->qbuf_info[j].buffer.num_planes = 1;
+    // ss->qbuf_info[j].buffer.planes[0].addr = ss->bufs[j].fd;
+    // ss->qbuf_info[j].buffer.planes[0].length = ss->bufs[j].len;
+    // err = ioctl(isp_fd, VIDIOC_MSM_ISP_ENQUEUE_BUF, &ss->qbuf_info[j]);
+  }
+
+  // update stream
+  struct msm_vfe_axi_stream_update_cmd update_cmd = {};
+  update_cmd.num_streams = 1;
+  update_cmd.update_info[0].user_stream_id = ss->stream_req.stream_id;
+  update_cmd.update_info[0].stream_handle = ss->stream_req.axi_stream_handle;
+  update_cmd.update_type = UPDATE_STREAM_ADD_BUFQ;
+  cam_ioctl(isp_fd, VIDIOC_MSM_ISP_UPDATE_STREAM, &update_cmd, "isp update stream");
+
+  // start streams
   
   exit(0);
 }

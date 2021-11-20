@@ -61,4 +61,5 @@ typedef struct StreamState {
   struct msm_isp_buf_request buf_request;
   struct msm_vfe_axi_stream_request_cmd stream_req;
   struct msm_isp_qbuf_info qbuf_info[FRAME_BUF_COUNT];
+  // VisionBuf *bufs;
 } StreamState;
