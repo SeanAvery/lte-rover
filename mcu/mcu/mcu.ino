@@ -17,7 +17,7 @@ int minAngle = 60;
 int maxAngle = 120;
 int centerAngle = 90;
 int minThrottleForward = 100;
-int maxThrottleFortward = 300;
+int maxThrottleFortward = 320;
 int minThrottleaReverse = 70;
 int maxThrottleReverse = 20;
 
@@ -38,7 +38,7 @@ void setup() {
   Serial.println("serial port is setup");
 
   // setup pwm pins for steering and motor control
-  steeringServo.attach(9);
+  // steeringServo.attach(9);
   Serial.println("steering servo attatched");
   motorEsc.attach(10);
   Serial.println("motor esc attatched");
@@ -71,7 +71,8 @@ bool throttle_safe(int value)
 }
 
 void loop() {
-  if (serialPort.available())
+  // if (serialPort.available())
+  if (true)
   {
     char serialMsg[7];
     size_t msgLength = serialPort.readBytesUntil(escapeIndex, serialMsg, 34);
@@ -81,6 +82,7 @@ void loop() {
     sscanf(serialMsg, "%c%5d", header, &value);
 
     if (serialMsg[0] == throttleIndex) {
+      Serial.println(value);
       if (throttle_safe(value))
       {
         throttle = value;
