@@ -14,6 +14,14 @@ window.addEventListener("gamepaddisconnected", e=> {
 
 const gameLoop = () => {
   if (gamepad) {
+  console.log("yooo")
+    for (const button in gamepad.buttons) {
+      // console.log(gamepad.buttons[button])
+      if (gamepad.buttons[button].touched) {
+        console.log(button)
+      }
+    }
   }
-  
 }
+
+window.setInterval(gameLoop, 1000)
