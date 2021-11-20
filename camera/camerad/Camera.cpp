@@ -7,6 +7,9 @@
 // #include "include/msmb_isp.h"
 // #include "include/msmb_ispif.h"
 
+#include <linux/media.h>
+
+
 #include <iostream>
 #include <fstream>
 #include <sys/ioctl.h>
@@ -286,10 +289,22 @@ void Camera::camera_open()
 
 void Camera::camera_run()
 {
+  std::cout << "camera_run" << std::endl;
   while(true)
   {
     struct pollfd fds[1] = {{ .fd = isp_fd, .events = POLLPRI }};
     int ret = poll(fds, std::size(fds), 1000);
+    if (ret != 0)
+    {
+      std::cout << "poll error: " << ret << std::endl;
+      break;
+    }
+    
+    if (!fds[0].revents) continue;
+    
+    struct v4l2_event ev = {};
+    ret = HANDLE_EINTR(ioctl(isp_fd, VIDIOC_DQEVENT, &ev));
+    const msm_isp_event_data *isp_event_data = (const msm_isp_event_data *)ev.u.data;
   }
  
 }
