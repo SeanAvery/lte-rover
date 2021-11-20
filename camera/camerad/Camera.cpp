@@ -305,6 +305,22 @@ void Camera::camera_run()
     struct v4l2_event ev = {};
     ret = HANDLE_EINTR(ioctl(isp_fd, VIDIOC_DQEVENT, &ev));
     const msm_isp_event_data *isp_event_data = (const msm_isp_event_data *)ev.u.data;
+
+    if (ev.type = ISP_EVENT_BUF_DIVERT)
+    {
+      std::cout << "ISP_EVENT_BUF_DIVERT" << std::endl;
+    }
+    else if (ev.type == ISP_EVENT_EOF)
+    {
+      std::cout << "ISP_EVENT_EOF" << std::endl;
+
+    }
+    else if (ev.type == ISP_EVENT_ERROR)
+    {
+      std::cout << "ISP_EVENT_ERROR" << std::endl;
+
+    }
+    
   }
  
 }
