@@ -95,7 +95,7 @@ void loop() {
       }
     }
   }
-  Serial.println(throttle);
+  // Serial.println(throttle);
   motorEsc.write(throttle);
   steeringServo.write(angle);
 }

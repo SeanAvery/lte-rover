@@ -24,9 +24,9 @@ if __name__ == "__main__":
     if key == ord('s'):
       throttle -= 1
     if key == ord('d'):
-      steering += 5
+      steering += 1
     if key == ord('a'):
-      steering -= 5
+      steering -= 1
     steering_msg = format_msg(steering_index, steering)
     throttle_msg = format_msg(throttle_index, throttle)
     
