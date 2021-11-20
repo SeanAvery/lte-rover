@@ -56,6 +56,7 @@ class Camera
     void camera_open();
     void camera_run();
     void camera_start();
+    void camera_process(); // thread event
     int sensor_write_regs(struct msm_camera_i2c_reg_array* arr, size_t size, msm_camera_i2c_data_type data_type);
 };
 
