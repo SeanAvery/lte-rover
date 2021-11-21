@@ -6,10 +6,13 @@ push-camerad:
 
 up-camerad:
 	/opt/homebrew/share/android-ndk/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android28-clang++ -Wmacro-redefined -Wc99-designator -std=c++17 -static-libstdc++ camerad/main.cpp -o camera
-	adb push camera /data
+	scp camera root@$(IP):/data
 
 build-mcud:
 	/opt/homebrew/share/android-ndk/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android28-clang++ -Wmacro-redefined -Wc99-designator -static-libstdc++  $(pkg-config --cflags libusb-1.0) mcud/main.cpp -lusb-1.0 -o mcu $(pkg-config --cflags libusb-1.0)
 
 push-mcud:
 	scp mcu root@$(IP):/data
+
+push-joypadd:
+	scp joypadd/server.py root@$(IP):/data
