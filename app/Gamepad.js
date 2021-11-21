@@ -3,6 +3,7 @@ let gamepad;
 window.addEventListener("gamepadconnected", e => {
   console.log("gamepad connected")
   gamepad = navigator.getGamepads()[0]
+  console.log("gamepads", navigator.getGamepads())
   console.log(gamepad)
 
 })
@@ -13,14 +14,13 @@ window.addEventListener("gamepaddisconnected", e=> {
 
 
 const gameLoop = () => {
+  gamepad = navigator.getGamepads()[0]
   if (gamepad) {
-  console.log("yooo")
     for (const button in gamepad.buttons) {
-      // console.log(gamepad.buttons[button])
-      if (gamepad.buttons[button].touched) {
+      if (gamepad.buttons[button].value > 0) {
         console.log(button)
       }
-    }
+    }  
   }
 }
 
