@@ -6,13 +6,10 @@ The goal of this microntroller is to keep things simple - just receive serial co
 
 ### hardware
 
-Currently using arduino nano dev board that comes with ATmega328P procesessor.
+Currently using arduino nano dev board that comes with ATmega328P procesessor. Powerd through 5 volts from ESC. Controls pwm of esc and steering servo.
 
 ### messaging
-Todo: implement captnproto (this will require stm32).
-
 Simple string prefixed delineation.
 
-T: throttle
-S: steering
+<char prefix><value><#>
 
