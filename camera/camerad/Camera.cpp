@@ -330,7 +330,7 @@ void Camera::camera_run()
     std::cout << "events: " << fds[0].events << std::endl;
     std::cout << "revents: " << fds[0].revents << std::endl;
     
-    if (!fds[0].revents) continue;
+    // if (!fds[0].revents) continue;
 
     std::cout << 2 << std::endl;
     
@@ -343,6 +343,21 @@ void Camera::camera_run()
     if (ev.type = ISP_EVENT_BUF_DIVERT)
     {
       std::cout << "ISP_EVENT_BUF_DIVERT" << std::endl;
+      const int buf_idx = isp_event_data->u.buf_done.buf_idx;
+      const int buffer = (isp_event_data->u.buf_done.stream_id & 0xFFFF) - 1;
+      if (buffer == 0)
+      {
+        std::cout << "buffer is 0"  << std::endl;
+      }
+      else
+      {
+        if (buffer == 1)
+        {
+          std::cout << "buffer is 1" << std::endl;
+        }
+        auto &s = ss[buffer];
+
+      }
     }
     else if (ev.type == ISP_EVENT_EOF)
     {
@@ -359,6 +374,7 @@ void Camera::camera_run()
 
 void Camera::camera_process()
 {
+  std::cout << "camera process thread here" << std::endl;
 
 }
 
