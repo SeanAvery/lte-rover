@@ -20,11 +20,6 @@
 #include <string.h>
 #include <poll.h>
 
-void Camera::camera_init()
-{
-   
-}
-
 
 void Camera::camera_open()
 {
@@ -32,17 +27,24 @@ void Camera::camera_open()
   std::cout << std::endl;
   std::cout << "opening subsystem files" << std::endl;
   msm_fd = HANDLE_EINTR(open(params::MSM_SUBSYSTEM, O_RDWR | O_NONBLOCK));
-  v4l_fd = HANDLE_EINTR(open(params::V4L_SUBSYSTEM, O_RDWR | O_NONBLOCK));
-  ispif_fd = HANDLE_EINTR(open(params::ISPIF_SUBSYSTEM, O_RDWR | O_NONBLOCK));
   actuator_fd = HANDLE_EINTR(open(params::ACTUATOR_SUBSYSTEM, O_RDWR | O_NONBLOCK));
 
   // open subdevice files
   csid_fd = HANDLE_EINTR(open(params::CSID_SUBSYSTEM, O_RDWR | O_NONBLOCK));
   assert(csid_fd >= 0);
+
   csiphy_fd= HANDLE_EINTR(open(params::CSIPHY_SUBSYSTEM, O_RDWR | O_NONBLOCK));
   isp_fd= HANDLE_EINTR(open(params::ISP_SUBSYSTEM, O_RDWR | O_NONBLOCK));
- 
-  // struct csid_cfg_data csid_cfg_data = {};
+
+  camera_init();
+
+  ispif_fd = HANDLE_EINTR(open(params::ISPIF_SUBSYSTEM, O_RDWR | O_NONBLOCK));
+  v4l_fd = HANDLE_EINTR(open(params::V4L_SUBSYSTEM, O_RDWR | O_NONBLOCK));
+}
+
+void Camera::camera_init()
+{
+    // struct csid_cfg_data csid_cfg_data = {};
   struct msm_actuator_cfg_data actuator_cfg_data = {};
   struct  v4l2_event_subscription sub = {};
 
@@ -300,11 +302,15 @@ void Camera::camera_open()
   {
     stream_cfg.stream_handle[i] = ss[i].stream_req.axi_stream_handle;
   }
-  cam_ioctl(isp_fd, VIDIOC_MSM_ISP_CFG_STREAM, &stream_cfg, "isp start stream");
+  cam_ioctl(isp_fd, VIDIOC_MSM_ISP_CFG_STREAM, &stream_cfg, "isp start stream"); 
 }
 
 void Camera::camera_run()
 {
+  // start camera process thread
+  std::cout << "start camera process thread" << std::endl;
+  std::thread thread = std::thread(&Camera::camera_process, this);
+  
   std::cout << std::endl;
   std::cout << "camera_run" << std::endl;
   while(true)
@@ -353,7 +359,7 @@ void Camera::camera_run()
 
 void Camera::camera_process()
 {
-  
+
 }
 
 int Camera::sensor_write_regs(struct msm_camera_i2c_reg_array* arr, size_t size, msm_camera_i2c_data_type data_type)
