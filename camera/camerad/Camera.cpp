@@ -207,69 +207,71 @@ void Camera::camera_open()
   msm_vfe_smmu_attach_cmd smmu_attach_cmd = {.security_mode = 0, .iommu_attach_mode = IOMMU_ATTACH};
   cam_ioctl(isp_fd, VIDIOC_MSM_ISP_SMMU_ATTACH, &smmu_attach_cmd, "isp smmu attach");
 
-  // configure isp stream
   std::cout << "configuring input" << std::endl;
   struct msm_vfe_input_cfg input_cfg = {};
 
   for (int i = 0; i < 3; i++)
   {
+    StreamState *s = &ss[i];
+    memset(&input_cfg, 0, sizeof(struct msm_vfe_input_cfg));
+    input_cfg.input_src = (msm_vfe_input_src)(VFE_RAW_0 + 1);
+    input_cfg.input_pix_clk = pixel_clock;
+    input_cfg.d.rdi_cfg.cid = 0;
+    input_cfg.d.rdi_cfg.frame_based = 1;
+    err = ioctl(isp_fd, VIDIOC_MSM_ISP_INPUT_CFG, &input_cfg);
+    std::cout << "configure error: " << err << std::endl;
 
+    // configure isp stream
+    s->stream_req.axi_stream_handle = 0;
+    s->stream_req.session_id = 2;
+    s->stream_req.stream_id = ISP_NATIVE_BUF_BIT | (1 + i);
+    if (i == 0)
+    {
+      s->stream_req.output_format = v4l2_fourcc('R', 'G', '1', '0');
+    } 
+    else
+    {
+      s->stream_req.output_format = v4l2_fourcc('Q', 'M', 'E', 'T');
+    }
+
+    s->stream_req.stream_src = (msm_vfe_axi_stream_src)(RDI_INTF_0 + i);
+    s->stream_req.frame_base = 1;
+    s->stream_req.frame_base = 1;
+    s->stream_req .buf_divert = 1;
+
+    std::cout << "configuring stream" << std::endl;
+    err = cam_ioctl(isp_fd, VIDIOC_MSM_ISP_REQUEST_STREAM, &s->stream_req, "configure stream");
+    std::cout << "stream request error: " << err << std::endl;
+
+    s->buf_request.session_id = s->stream_req.session_id;
+    s->buf_request.stream_id = s->stream_req.stream_id;
+    s->buf_request.num_buf = FRAME_BUF_COUNT;
+    s->buf_request.buf_type = ISP_PRIVATE_BUF;
+    s->buf_request.handle = 0;
+
+    // isp request_buf
+    cam_ioctl(isp_fd, VIDIOC_MSM_ISP_REQUEST_BUF, &s->buf_request, "isp request buf");
+    std::cout << "got buf handle: " << s->buf_request.handle << std::endl;
+
+    // enqueue buffers
+    for (int j = 0; j < ss->buf_request.num_buf; j++)
+    {
+      s->qbuf_info[j].handle = s->buf_request.handle;
+      s->qbuf_info[j].buf_idx = j;
+      s->qbuf_info[j].buffer.num_planes = 1;
+      // s->qbuf_info[j].buffer.planes[0].addr = s->bufs[j].fd;
+      // ss->qbuf_info[j].buffer.planes[0].length = ss->bufs[j].len;
+      // err = ioctl(isp_fd, VIDIOC_MSM_ISP_ENQUEUE_BUF, &ss->qbuf_info[j]);
+    }
+    // update stream
+    struct msm_vfe_axi_stream_update_cmd update_cmd = {};
+    update_cmd.num_streams = 1;
+    update_cmd.update_info[0].user_stream_id = s->stream_req.stream_id;
+    update_cmd.update_info[0].stream_handle = s->stream_req.axi_stream_handle;
+    update_cmd.update_type = UPDATE_STREAM_ADD_BUFQ;
+    cam_ioctl(isp_fd, VIDIOC_MSM_ISP_UPDATE_STREAM, &update_cmd, "isp update stream");
   }
-  
-  StreamState *ss = &ss[0];
-
-  memset(&input_cfg, 0, sizeof(struct msm_vfe_input_cfg));
-  
-  input_cfg.input_src = (msm_vfe_input_src)(VFE_RAW_0 + 1);
-  input_cfg.input_pix_clk = pixel_clock;
-  input_cfg.d.rdi_cfg.cid = 0;
-  input_cfg.d.rdi_cfg.frame_based = 1;
-
-  err = ioctl(isp_fd, VIDIOC_MSM_ISP_INPUT_CFG, &input_cfg);
-  std::cout << "configure error: " << err << std::endl;
-
-  ss->stream_req.session_id = 2;
-  ss->stream_req.stream_id = ISP_NATIVE_BUF_BIT | (1 + 0);
-  ss->stream_req.output_format = v4l2_fourcc('R', 'G', '1', '0');
-  ss->stream_req.axi_stream_handle = 0;
-  ss->stream_req.stream_src = (msm_vfe_axi_stream_src)(RDI_INTF_0 + 0);
-  ss->stream_req.frame_skip_pattern = EVERY_3FRAME;
-  ss->stream_req.frame_base = 1;
-  ss->stream_req .buf_divert = 1;
-
-  std::cout << "configuring stream" << std::endl;
-  err = cam_ioctl(isp_fd, VIDIOC_MSM_ISP_REQUEST_STREAM, &ss->stream_req, "configure stream");
-  std::cout << "stream request error: " << err << std::endl;
-
-
-  // isp request_buf
-  ss->buf_request.session_id = ss->stream_req.session_id;
-  ss->buf_request.stream_id = ss->stream_req.stream_id;
-  ss->buf_request.num_buf = FRAME_BUF_COUNT;
-  ss->buf_request.buf_type = ISP_PRIVATE_BUF;
-  ss->buf_request.handle = 0;
-  cam_ioctl(isp_fd, VIDIOC_MSM_ISP_REQUEST_BUF, &ss->buf_request, "isp request buf");
-  std::cout << "got buf handle: " << ss->buf_request.handle << std::endl;
-  
-  // enqueue buffers
-  for (int j = 0; j < ss->buf_request.num_buf; j++)
-  {
-    ss->qbuf_info[j].handle = ss->buf_request.handle;
-    ss->qbuf_info[j].buf_idx = j;
-    ss->qbuf_info[j].buffer.num_planes = 1;
-    // ss->qbuf_info[j].buffer.planes[0].addr = ss->bufs[j].fd;
-    // ss->qbuf_info[j].buffer.planes[0].length = ss->bufs[j].len;
-    // err = ioctl(isp_fd, VIDIOC_MSM_ISP_ENQUEUE_BUF, &ss->qbuf_info[j]);
-  }
-
-  // update stream
-  struct msm_vfe_axi_stream_update_cmd update_cmd = {};
-  update_cmd.num_streams = 1;
-  update_cmd.update_info[0].user_stream_id = ss->stream_req.stream_id;
-  update_cmd.update_info[0].stream_handle = ss->stream_req.axi_stream_handle;
-  update_cmd.update_type = UPDATE_STREAM_ADD_BUFQ;
-  cam_ioctl(isp_fd, VIDIOC_MSM_ISP_UPDATE_STREAM, &update_cmd, "isp update stream");
-
+   
   // start streams
 
   // subscribe event
