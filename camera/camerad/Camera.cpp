@@ -28,6 +28,9 @@ void Camera::camera_init()
 
 void Camera::camera_open()
 {
+ 
+  std::cout << std::endl;
+  std::cout << "opening subsystem files" << std::endl;
   msm_fd = HANDLE_EINTR(open(params::MSM_SUBSYSTEM, O_RDWR | O_NONBLOCK));
   v4l_fd = HANDLE_EINTR(open(params::V4L_SUBSYSTEM, O_RDWR | O_NONBLOCK));
   ispif_fd = HANDLE_EINTR(open(params::ISPIF_SUBSYSTEM, O_RDWR | O_NONBLOCK));
@@ -103,7 +106,10 @@ void Camera::camera_open()
   assert(sensor_fd >= 0);
 
   // shutdown camera stream
+  std::cout << std::endl;
+  std::cout << "shutdown camera" << std::endl;
   // release csiphy
+  std::cout << "release csiphy" << std::endl;
   struct msm_camera_csi_lane_params csi_lane_params = {0};
   csi_lane_params.csi_lane_mask = 0x1f;
   csiphy_cfg_data csiphy_cfg_data = { .cfgtype = CSIPHY_RELEASE, .cfg.csi_lane_params = &csi_lane_params}; 
@@ -114,6 +120,8 @@ void Camera::camera_open()
   struct csid_cfg_data csid_cfg_data = {};
 
   csid_cfg_data.cfgtype = CSID_RELEASE;
+
+  std::cout << "release csid" << std::endl;
   cam_ioctl(csid_fd, VIDIOC_MSM_CSID_IO_CFG, &csid_cfg_data, "release csid");
 
   // power down camera sensor
@@ -126,6 +134,10 @@ void Camera::camera_open()
   cam_ioctl(actuator_fd, VIDIOC_MSM_ACTUATOR_CFG, &actuator_cfg_data, "actuator powerdown");
 
   // start camera stream
+
+  std::cout << std::endl;
+  std::cout << "starting camera stream" << std::endl;
+
   // csid init
   std::cout << "csid init" << std::endl;
   csid_cfg_data.cfgtype = CSID_INIT;
@@ -203,15 +215,16 @@ void Camera::camera_open()
   cam_ioctl(csid_fd, VIDIOC_MSM_CSID_IO_CFG, &csid_cfg_data, "csid configure");
 
   // smmu attach
-  std::cout << "attaching smmu " << isp_fd << std::endl;
+  std::cout << "attaching smmu " << std::endl;
   msm_vfe_smmu_attach_cmd smmu_attach_cmd = {.security_mode = 0, .iommu_attach_mode = IOMMU_ATTACH};
   cam_ioctl(isp_fd, VIDIOC_MSM_ISP_SMMU_ATTACH, &smmu_attach_cmd, "isp smmu attach");
 
   std::cout << "configuring input" << std::endl;
   struct msm_vfe_input_cfg input_cfg = {};
 
-  for (int i = 0; i < 3; i++)
+  for (int i = 0; i < 1; i++)
   {
+    std::cout << std::endl;
     std::cout << "configuring stream " << i << std::endl;
     StreamState *s = &ss[i];
     memset(&input_cfg, 0, sizeof(struct msm_vfe_input_cfg));
@@ -278,10 +291,11 @@ void Camera::camera_open()
   // subscribe event
   sub.id = 0;
   sub.type = 0x1ff;
-  // cam_ioctl(isp_fd, VIDIOC_SUBSCRIBE_EVENT, &sub, "isp subscribe");
+  std::cout << "isp subscribe" << std::endl;
+  cam_ioctl(isp_fd, VIDIOC_SUBSCRIBE_EVENT, &sub, "isp subscribe");
 
   stream_cfg.cmd = START_STREAM;
-  stream_cfg.num_streams = 3;
+  stream_cfg.num_streams = 1;
   for (int i = 0; i < stream_cfg.num_streams; i++)
   {
     stream_cfg.stream_handle[i] = ss[i].stream_req.axi_stream_handle;
@@ -291,6 +305,7 @@ void Camera::camera_open()
 
 void Camera::camera_run()
 {
+  std::cout << std::endl;
   std::cout << "camera_run" << std::endl;
   while(true)
   {
@@ -304,14 +319,20 @@ void Camera::camera_run()
     }
 
     std::cout << 1 << std::endl;
+
+    std::cout << "fd: " << fds[0].fd << std::endl;
+    std::cout << "events: " << fds[0].events << std::endl;
+    std::cout << "revents: " << fds[0].revents << std::endl;
     
     if (!fds[0].revents) continue;
+
+    std::cout << 2 << std::endl;
     
     struct v4l2_event ev = {};
     ret = HANDLE_EINTR(ioctl(isp_fd, VIDIOC_DQEVENT, &ev));
     const msm_isp_event_data *isp_event_data = (const msm_isp_event_data *)ev.u.data;
 
-    std::cout << 2 << std::endl;
+    std::cout << 3 << std::endl;
 
     if (ev.type = ISP_EVENT_BUF_DIVERT)
     {
