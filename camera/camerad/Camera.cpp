@@ -212,6 +212,7 @@ void Camera::camera_open()
 
   for (int i = 0; i < 3; i++)
   {
+    std::cout << "configuring stream " << i << std::endl;
     StreamState *s = &ss[i];
     memset(&input_cfg, 0, sizeof(struct msm_vfe_input_cfg));
     input_cfg.input_src = (msm_vfe_input_src)(VFE_RAW_0 + 1);
@@ -239,7 +240,7 @@ void Camera::camera_open()
     s->stream_req.frame_base = 1;
     s->stream_req .buf_divert = 1;
 
-    std::cout << "configuring stream" << std::endl;
+    std::cout << "configuring isp stream" << std::endl;
     err = cam_ioctl(isp_fd, VIDIOC_MSM_ISP_REQUEST_STREAM, &s->stream_req, "configure stream");
     std::cout << "stream request error: " << err << std::endl;
 
@@ -280,9 +281,11 @@ void Camera::camera_open()
   // cam_ioctl(isp_fd, VIDIOC_SUBSCRIBE_EVENT, &sub, "isp subscribe");
 
   stream_cfg.cmd = START_STREAM;
-  stream_cfg.num_streams = 1;
-  stream_cfg.stream_handle[0] = ss->stream_req.axi_stream_handle;
-  
+  stream_cfg.num_streams = 3;
+  for (int i = 0; i < stream_cfg.num_streams; i++)
+  {
+    stream_cfg.stream_handle[i] = ss[i].stream_req.axi_stream_handle;
+  }
   cam_ioctl(isp_fd, VIDIOC_MSM_ISP_CFG_STREAM, &stream_cfg, "isp start stream");
 }
 
