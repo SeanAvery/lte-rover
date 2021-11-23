@@ -343,6 +343,7 @@ void Camera::camera_run()
     if (ev.type = ISP_EVENT_BUF_DIVERT)
     {
       std::cout << "ISP_EVENT_BUF_DIVERT" << std::endl;
+      std::cout << "isp buf" << ev.u.data << std::endl;
       const int buf_idx = isp_event_data->u.buf_done.buf_idx;
       const int buffer = (isp_event_data->u.buf_done.stream_id & 0xFFFF) - 1;
       if (buffer == 0)
@@ -356,6 +357,9 @@ void Camera::camera_run()
           std::cout << "buffer is 1" << std::endl;
         }
         auto &s = ss[buffer];
+        s.qbuf_info[buf_idx].dirty_buf = 1;
+        cam_ioctl(isp_fd, VIDIOC_MSM_ISP_ENQUEUE_BUF, &s.qbuf_info[buf_idx]);
+        std::cout << s.qbuf_info << std::endl;
 
       }
     }
