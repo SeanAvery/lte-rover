@@ -1,6 +1,3 @@
-[submodule "camera/bionic"]
-	path = camera/bionic
-	url = https://android.googlesource.com/platform/bionic
 [submodule "camera/gcc"]
 	path = camera/gcc
 	url = https://android.googlesource.com/toolchain/gcc
