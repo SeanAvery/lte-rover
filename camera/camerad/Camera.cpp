@@ -52,40 +52,43 @@ void Camera::camera_init()
   sensorinit_fd =  HANDLE_EINTR(open(params::SENSORINIT_SUBSYSTEM, O_RDWR | O_NONBLOCK));
   
   // slave info
-  msm_camera_sensor_slave_info info = {
-    .sensor_name = "ov8865_sunny",
-    .eeprom_name = "ov8865_plus",
-    .actuator_name = "",
+  msm_camera_sensor_slave_info info = { // road camera;
+    .sensor_name = "imx298",
+    .eeprom_name = "sony_imx298",
+    .actuator_name = "dw9800w",
     .ois_name = "",
-    .flash_name = "",
-    .camera_id = CAMERA_2,
-    .slave_addr = 108,
+    .flash_name = "pmic",
+    .camera_id = CAMERA_0,
+    .slave_addr = 32,
     .i2c_freq_mode = I2C_FAST_MODE,
     .addr_type = MSM_CAMERA_I2C_WORD_ADDR,
-    .sensor_id_info = {.sensor_id_reg_addr = 12299, .sensor_id = 34917, .module_id = 2},
+    .sensor_id_info = {.sensor_id_reg_addr = 22, .sensor_id = 664, .module_id = 9, .vcm_id = 6},
     .power_setting_array = {
       .power_setting_a = {
-        {.seq_type = SENSOR_GPIO, .delay = 5},
-        {.seq_type = SENSOR_VREG, .seq_val = 1},
+        {.seq_type = SENSOR_GPIO, .delay = 1},
         {.seq_type = SENSOR_VREG, .seq_val = 2},
-        {.seq_type = SENSOR_VREG},
-        {.seq_type = SENSOR_CLK, .config_val = 24000000, .delay = 1},
-        {.seq_type = SENSOR_GPIO, .config_val = 2, .delay = 1},
-      },
-      .size = 6,
-      .power_down_setting_a = {
-        {.seq_type = SENSOR_GPIO, .delay = 5},
-        {.seq_type = SENSOR_CLK, .delay = 1},
-        {.seq_type = SENSOR_VREG},
+        {.seq_type = SENSOR_GPIO, .seq_val = 5, .config_val = 2},
         {.seq_type = SENSOR_VREG, .seq_val = 1},
-        {.seq_type = SENSOR_VREG, .seq_val = 2, .delay = 1},
+        {.seq_type = SENSOR_VREG, .seq_val = 3, .delay = 1},
+        {.seq_type = SENSOR_CLK, .config_val = 24000000, .delay = 1},
+        {.seq_type = SENSOR_GPIO, .config_val = 2, .delay = 10},
       },
-      .size_down = 5,
+      .size = 7,
+      .power_down_setting_a = {
+        {.seq_type = SENSOR_CLK, .delay = 1},
+        {.seq_type = SENSOR_GPIO, .delay = 1},
+        {.seq_type = SENSOR_VREG, .seq_val = 1},
+        {.seq_type = SENSOR_GPIO, .seq_val = 5},
+        {.seq_type = SENSOR_VREG, .seq_val = 2},
+        {.seq_type = SENSOR_VREG, .seq_val = 3, .delay = 1},
+      },
+      .size_down = 6,
     },
     .is_init_params_valid = 0,
-    .sensor_init_params = {.modes_supported = 1, .position = FRONT_CAMERA_B, .sensor_mount_angle = 270},
+    .sensor_init_params = {.modes_supported = 1, .position = BACK_CAMERA_B, .sensor_mount_angle = 90},
     .output_format = MSM_SENSOR_BAYER,
   };
+
   info.power_setting_array.power_setting = &info.power_setting_array.power_setting_a[0];
   info.power_setting_array.power_down_setting = &info.power_setting_array.power_down_setting_a[0];
   sensor_init_cfg_data sensor_init_cfg = {.cfgtype = CFG_SINIT_PROBE, .cfg.setting = &info};
@@ -396,3 +399,38 @@ int Camera::sensor_write_regs(struct msm_camera_i2c_reg_array* arr, size_t size,
   return HANDLE_EINTR(ioctl(sensor_fd, VIDIOC_MSM_SENSOR_CFG, &cfg_data));
 }
 
+//msm_camera_sensor_slave_info info = {
+//    .sensor_name = "ov8865_sunny",
+//    .eeprom_name = "ov8865_plus",
+//    .actuator_name = "",
+//    .ois_name = "",
+//    .flash_name = "",
+//    .camera_id = CAMERA_2,
+//    .slave_addr = 108,
+//    .i2c_freq_mode = I2C_FAST_MODE,
+//    .addr_type = MSM_CAMERA_I2C_WORD_ADDR,
+//    .sensor_id_info = {.sensor_id_reg_addr = 12299, .sensor_id = 34917, .module_id = 2},
+//    .power_setting_array = {
+//      .power_setting_a = {
+//        {.seq_type = SENSOR_GPIO, .delay = 5},
+//        {.seq_type = SENSOR_VREG, .seq_val = 1},
+//        {.seq_type = SENSOR_VREG, .seq_val = 2},
+//        {.seq_type = SENSOR_VREG},
+//        {.seq_type = SENSOR_CLK, .config_val = 24000000, .delay = 1},
+//        {.seq_type = SENSOR_GPIO, .config_val = 2, .delay = 1},
+//      },
+//      .size = 6,
+//      .power_down_setting_a = {
+//        {.seq_type = SENSOR_GPIO, .delay = 5},
+//        {.seq_type = SENSOR_CLK, .delay = 1},
+//        {.seq_type = SENSOR_VREG},
+//        {.seq_type = SENSOR_VREG, .seq_val = 1},
+//        {.seq_type = SENSOR_VREG, .seq_val = 2, .delay = 1},
+//      },
+//      .size_down = 5,
+//    },
+//    .is_init_params_valid = 0,
+//    .sensor_init_params = {.modes_supported = 1, .position = FRONT_CAMERA_B, .sensor_mount_angle = 270},
+//    .output_format = MSM_SENSOR_BAYER,
+//  };
+//
