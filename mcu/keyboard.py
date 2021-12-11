@@ -15,18 +15,18 @@ def format_msg(prefix, value):
 
 if __name__ == "__main__":
   stdscr = curses.initscr()
-  ser = serial.Serial("/dev/cu.usbserial-1130", 115200);
+  ser = serial.Serial("/dev/cu.usbserial-11310", 115200);
   print("connected to serial port")
   while True:
     key = stdscr.getch()
     if key == ord('w'):
-      throttle += 1
+      throttle += 5
     if key == ord('s'):
-      throttle -= 1
+      throttle -= 5
     if key == ord('d'):
-      steering += 1
+      steering += 5
     if key == ord('a'):
-      steering -= 1
+      steering -= 5
     steering_msg = format_msg(steering_index, steering)
     throttle_msg = format_msg(throttle_index, throttle)
     

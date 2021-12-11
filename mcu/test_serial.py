@@ -21,7 +21,7 @@ def format_msg(prefix, value):
 if __name__ == "__main__":
   ser = serial.Serial(mcu_port, 115200);
 
-  throttle_val = -300;
+  throttle_val = 0;
   steering_val = 90;
 
   # test sending command over the wire
@@ -30,7 +30,7 @@ if __name__ == "__main__":
     # log = ser.readline().decode('utf8')
     # print(log)
     # update commands
-    throttle_val += 10
+    throttle_val += 1
     throttle = format_msg(throttle_index, 110)
     steering_val += 1
     steering = format_msg(steering_index, steering_val)
