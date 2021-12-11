@@ -17,4 +17,11 @@ class VisionBuf {
     size_t width = 0;
     size_t height = 0;
     size_t stride = 0;
+
+    // ion
+    int handle;
+    
+    void allocate(size_t len);
+    void init_rgb(size_t width, size_t height, size_t tride);
+    int free();
 };
