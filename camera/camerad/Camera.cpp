@@ -280,7 +280,7 @@ void Camera::camera_init()
       s->qbuf_info[j].buffer.num_planes = 1;
       // s->qbuf_info[j].buffer.planes[0].addr = s->bufs[j].fd;
       // ss->qbuf_info[j].buffer.planes[0].length = ss->bufs[j].len;
-      // err = ioctl(isp_fd, VIDIOC_MSM_ISP_ENQUEUE_BUF, &ss->qbuf_info[j]);
+      err = ioctl(isp_fd, VIDIOC_MSM_ISP_ENQUEUE_BUF, &ss->qbuf_info[j]);
     }
     // update stream
     struct msm_vfe_axi_stream_update_cmd update_cmd = {};
@@ -346,7 +346,7 @@ void Camera::camera_run()
     if (ev.type = ISP_EVENT_BUF_DIVERT)
     {
       std::cout << "ISP_EVENT_BUF_DIVERT" << std::endl;
-      std::cout << "isp buf" << ev.u.data << std::endl;
+      std::cout << "isp buf" << &ev.u.data << std::endl;
       const int buf_idx = isp_event_data->u.buf_done.buf_idx;
       const int buffer = (isp_event_data->u.buf_done.stream_id & 0xFFFF) - 1;
       if (buffer == 0)
