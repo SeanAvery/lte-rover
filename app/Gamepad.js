@@ -1,5 +1,8 @@
 let gamepad;
 
+const leftTrigger = 6;
+const rightTrigger = 7;
+
 window.addEventListener("gamepadconnected", e => {
   console.log("gamepad connected")
   gamepad = navigator.getGamepads()[0]
@@ -17,8 +20,14 @@ const gameLoop = () => {
   gamepad = navigator.getGamepads()[0]
   if (gamepad) {
     for (const button in gamepad.buttons) {
-      if (gamepad.buttons[button].value > 0) {
-        console.log(button)
+      const value = gamepad.buttons[button].value
+      if (value > 0) {
+        if (button == leftTrigger) {
+          console.log("leftTrigger", value)
+        }
+        if (button == rightTrigger) {
+          console.log("rightTrigger", value)
+        }
       }
     }  
   }

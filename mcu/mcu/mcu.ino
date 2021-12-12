@@ -35,11 +35,9 @@ void setup() {
     ;
   }
   serialPort.begin(115200);
-  Serial.println("serial port is setup");
-
+  Serial.println("serial port is connected");
   // setup pwm pins for steering and motor control
-  steeringServo.attach(9);
-  Serial.println("steering servo attatched");
+  // steeringServo.attach(9);
   motorEsc.attach(10);
   Serial.println("motor esc attatched");
 }
@@ -82,7 +80,7 @@ void loop() {
     sscanf(serialMsg, "%c%5d", header, &value);
 
     if (serialMsg[0] == throttleIndex) {
-      if (throttle_safe(value))
+      if (throttle_safe(value) || true)
       {
         throttle = value;
       }

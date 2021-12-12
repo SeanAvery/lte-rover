@@ -1,4 +1,5 @@
-#include <libusb-1.0/libusb.h>
+#pragma once
+#include "include/libusb.h"
 
 class Mcu
 {
@@ -9,3 +10,4 @@ class Mcu
   public:
     int init();
 };
+
