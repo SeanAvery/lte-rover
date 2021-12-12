@@ -4,7 +4,7 @@
 #include <iostream>
 #include <assert.h>
 
-int Mcu::init()
+int Mcu::init(std::string serial)
 {
   ssize_t num_devices;
   libusb_device **dev_list = NULL;
