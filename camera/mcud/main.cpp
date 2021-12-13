@@ -18,7 +18,7 @@ Mcu *usb_connect()
 int main()
 {
   std::cout << "setting up mcu daemon" << std::endl;
-  
+  Mcu *mcu = usb_connect();
   return 0;
 }
 
