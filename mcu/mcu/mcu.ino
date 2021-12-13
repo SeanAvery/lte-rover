@@ -12,13 +12,13 @@ SoftwareSerial serialPort(0, 1);
 
 // global variables
 int angle = 90;
-int throttle = 0;
+int throttle = 90;
 int minAngle = 60;
 int maxAngle = 120;
 int centerAngle = 90;
-int minThrottleForward = 100;
-int maxThrottleFortward = 320;
-int minThrottleaReverse = 70;
+int minThrottleForward = 90;
+int maxThrottleFortward = 160;
+int minThrottleaReverse = 90;
 int maxThrottleReverse = 20;
 
 char throttleIndex = 't';
@@ -37,8 +37,8 @@ void setup() {
   serialPort.begin(115200);
   Serial.println("serial port is connected");
   // setup pwm pins for steering and motor control
-  // steeringServo.attach(9);
-  motorEsc.attach(10);
+   steeringServo.attach(10);
+  motorEsc.attach(9);
   Serial.println("motor esc attatched");
 }
 
