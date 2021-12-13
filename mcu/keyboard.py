@@ -6,8 +6,17 @@ throttle_index = "t";
 steering_index = "s";
 escape_char = "#";
 
-steering = 90;
+# throttle
 throttle = 90;
+neutral = 90;
+max_forward = 180;
+max_backward = 0;
+
+# steering
+steering = 90;
+center = 90;
+max_left = 60;
+max_right = 120;
 
 def format_msg(prefix, value):
   str_msg = "{}{:05d}{}".format(prefix, value, escape_char)
@@ -20,13 +29,17 @@ if __name__ == "__main__":
   while True:
     key = stdscr.getch()
     if key == ord('w'):
-      throttle += 5
+      throttle += 1
+      print(throttle)
     if key == ord('s'):
-      throttle -= 5
+      throttle -= 1
+      print(throttle)
     if key == ord('d'):
-      steering += 5
+      steering += 1
+      print(steering)
     if key == ord('a'):
-      steering -= 5
+      steering -= 1
+      print(steering)
     steering_msg = format_msg(steering_index, steering)
     throttle_msg = format_msg(throttle_index, throttle)
     
