@@ -23,8 +23,6 @@ int maxThrottleReverse = 20;
 
 char throttleIndex = 't';
 char steeringIndex = 's';
-char steeringCenterIndex = 'c';
-char steeringRadiusIndex = 'r';
 char escapeIndex = '#';
 
 void setup() {
@@ -69,8 +67,7 @@ bool throttle_safe(int value)
 }
 
 void loop() {
-  // if (serialPort.available())
-  if (true)
+  if (serialPort.available())
   {
     char serialMsg[7];
     size_t msgLength = serialPort.readBytesUntil(escapeIndex, serialMsg, 34);
@@ -93,7 +90,6 @@ void loop() {
       }
     }
   }
-  // Serial.println(throttle);
   motorEsc.write(throttle);
   steeringServo.write(angle);
 }
