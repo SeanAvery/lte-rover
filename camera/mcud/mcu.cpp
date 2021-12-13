@@ -26,7 +26,7 @@ int Mcu::init(std::string serial)
   {
     libusb_device_descriptor desc;
     libusb_get_device_descriptor(dev_list[i], &desc);
-    if (desc.idVendor == 0xbbaa && desc.idProduct == 0xddcc)
+    if (desc.idVendor == 6790 && desc.idProduct == 29987)
     {
       std::cout << "found mcu usb connection" << std::endl;
       libusb_open(dev_list[i], &dev_handle);
