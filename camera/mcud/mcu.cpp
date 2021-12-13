@@ -24,6 +24,16 @@ int Mcu::init(std::string serial)
   {
     libusb_device_descriptor desc;
     libusb_get_device_descriptor(dev_list[i], &desc);
+    if (desc.idVendor == 0xbbaa && desc.idProduct == 0xddcc)
+    {
+      std::cout << "found description matching vendor and product id" << std::endl;
+      libusb_open(dev_list[i], &dev_handle);
+      if (dev_handle == NULL)
+      {
+        std::cout << "dev_handle not found" << std::endl;
+        return 1;
+      }
+    }
   }
   return 0;
 }
