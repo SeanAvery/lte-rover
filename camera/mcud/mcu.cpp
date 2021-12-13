@@ -2,6 +2,7 @@
 #include "mcu.h"
 
 #include <iostream>
+#include <iterator>
 #include <assert.h>
 
 int Mcu::init(std::string serial)
@@ -35,6 +36,15 @@ int Mcu::init(std::string serial)
         std::cout << "dev_handle not found" << std::endl;
         return 1;
       }
+      unsigned char desc_serial[100] = { 0 };
+      // int ret = libusb_get_string_descriptor_ascii(dev_handle, desc.iSerialNumber, desc_serial, std::size(desc_serial));
+      int ret = libusb_get_string_descriptor_ascii(dev_handle, desc.iSerialNumber, desc_serial, std::size(desc_serial));
+      if (ret < 0)
+      {
+        std::cout << "could not fetch serial number" << std::endl;
+      }
+      usb_serial = std::string((char *)desc_serial, ret).c_str();
+      std::cout << "serial number: " << usb_serial << std::endl;
     }
   }
   return 0;

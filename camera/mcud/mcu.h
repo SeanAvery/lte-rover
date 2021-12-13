@@ -10,6 +10,7 @@ class Mcu
     libusb_context *ctx = NULL;
     libusb_device_handle *dev_handle = NULL;
     int init_usb_context(libusb_context **context);
+    std::string usb_serial;
   public:
     int init(std::string serial);
 };
