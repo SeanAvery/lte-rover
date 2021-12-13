@@ -9,7 +9,7 @@ Mcu *usb_connect()
   {
     mcu = std::make_unique<Mcu>();
     std::string serial_port = "/temp";
-    mcu.init(serial_port);
+    mcu->init(serial_port);
   }
   catch (std::exception &e)
   {
@@ -21,8 +21,10 @@ Mcu *usb_connect()
 int main()
 {
   std::cout << "setting up mcu daemon" << std::endl;
-  Mcu *mcu = usb_connect();
+  // Mcu *mcu = usb_connect();
+  Mcu mcu;
+  std::string temp = "yooo";
+  mcu.init(temp);
   return 0;
 }
-
 

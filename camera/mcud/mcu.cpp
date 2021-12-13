@@ -6,10 +6,11 @@
 
 int Mcu::init(std::string serial)
 {
+  std::cout << "initializing usb connection" << std::endl;
   ssize_t num_devices;
   libusb_device **dev_list = NULL;
   int err = init_usb_context(&ctx);
-  if (err != 0) 
+  if (err != 0)
   {
     std::cout << "failed to init usb context" << std::endl;
     return err;
@@ -20,10 +21,12 @@ int Mcu::init(std::string serial)
     std::cout << "did not find any usb devices" << std::endl;
     return 1;
   }
+  std::cout << "num_devices: " << num_devices << std::endl;
   for (size_t i = 0; i < num_devices; i++)
   {
     libusb_device_descriptor desc;
     libusb_get_device_descriptor(dev_list[i], &desc);
+    std::cout << "desc.idVendor: " << desc.idVendor << std::endl;
     if (desc.idVendor == 0xbbaa && desc.idProduct == 0xddcc)
     {
       std::cout << "found description matching vendor and product id" << std::endl;
