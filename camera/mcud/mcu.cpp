@@ -93,3 +93,21 @@ int Mcu::init_usb_context(libusb_context **context)
   libusb_set_debug(*context, 3);
   return 0;
 }
+
+
+int Mcu::usb_read(uint8_t bRequest, uint16_t wValue, uint16_t wIndex, unsigned char *data, uint16_t wLength, unsigned int timeout){
+  int err;
+  const uint8_t bmRequestType = LIBUSB_ENDPOINT_IN | LIBUSB_REQUEST_TYPE_VENDOR | LIBUSB_RECIPIENT_DEVICE;
+  // TODO: check if connected
+  // TODO: add lock
+  do
+  {
+    err = libusb_control_transfer(dev_handle, bmRequestType, bRequest, wValue, wIndex, data, wLength, timeout);
+  }
+  while (err < 0);
+}
+
+int Mcu::usb_write()
+{
+
+}
