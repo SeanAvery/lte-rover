@@ -68,8 +68,15 @@ int Mcu::init(std::string serial)
   if (err != 0)
   {
     std::cout << "could not set libusb configuration" << std::endl;
-    return 1;
+    return err;
   }
+  err = libusb_claim_interface(dev_handle, 0);
+  if (err != 0)
+  {
+    std::cout << "could not claim libusb interface" << std::endl;
+    return err;
+  }
+
   return 0;
 }
 
