@@ -35,7 +35,7 @@ int Mcu::init(std::string serial)
     libusb_get_device_descriptor(dev_list[i], &desc);
     if (desc.idVendor == 6790 && desc.idProduct == 29987)
     {
-      std::cout << "found mcu usb connection" << std::endl;
+      std::cout << "found mcu usb connection. device: " << i << std::endl;
       libusb_open(dev_list[i], &dev_handle);
       if (dev_handle == NULL)
       {
@@ -54,7 +54,7 @@ int Mcu::init(std::string serial)
       // libusb_close(dev_handle);
     }
   }
-  libusb_free_device_list(dev_list, 1);
+  // libusb_free_device_list(dev_list, 1);
 
   if (libusb_kernel_driver_active(dev_handle, 0) == 1)
   {
@@ -63,6 +63,12 @@ int Mcu::init(std::string serial)
     {
       std::cout << "kernel driver detatched" << std::endl;
     }
+  }
+  err = libusb_set_configuration(dev_handle, 1);
+  if (err != 0)
+  {
+    std::cout << "could not set libusb configuration" << std::endl;
+    return 1;
   }
   return 0;
 }
