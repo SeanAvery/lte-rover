@@ -51,7 +51,17 @@ int Mcu::init(std::string serial)
       // }
       // usb_serial = std::string((char *)desc_serial, ret).c_str();
       // std::cout << "serial number: " << usb_serial << std::endl;
-      libusb_close(dev_handle);
+      // libusb_close(dev_handle);
+    }
+  }
+  libusb_free_device_list(dev_list, 1);
+
+  if (libusb_kernel_driver_active(dev_handle, 0) == 1)
+  {
+    std::cout << "kernel driver active" << std::endl;
+    if (libusb_detach_kernel_driver(dev_handle, 0) == 0)
+    {
+      std::cout << "kernel driver detatched" << std::endl;
     }
   }
   return 0;
