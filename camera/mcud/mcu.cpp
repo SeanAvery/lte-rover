@@ -107,7 +107,18 @@ int Mcu::usb_read(uint8_t bRequest, uint16_t wValue, uint16_t wIndex, unsigned c
   while (err < 0);
 }
 
-int Mcu::usb_write()
+int usb_write(uint8_t bRequest, uint16_t wValue, uint16_t wIndex, unsigned int timeout)
 {
+  return 0;
+}
 
+
+int Mcu::usb_bulk_read(unsigned char endpoint, unsigned char* data, int length, unsigned int timeout)
+{
+  return 0;
+}
+
+int Mcu::usb_bulk_write(unsigned char endpoint, unsigned char* data, int length, unsigned int timeout)
+{
+  return 0;
 }
