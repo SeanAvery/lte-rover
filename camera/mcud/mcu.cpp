@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <iterator>
+#include <mutex>
 #include <assert.h>
 
 int Mcu::init(std::string serial)
@@ -120,5 +121,12 @@ int Mcu::usb_bulk_read(unsigned char endpoint, unsigned char* data, int length, 
 
 int Mcu::usb_bulk_write(unsigned char endpoint, unsigned char* data, int length, unsigned int timeout)
 {
+  std::lock_guard lock(usb_lock);
+  int transferred = 0;
+  int err = libusb_bulk_transfer(dev_handle, endpoint, data, length, &transferred, timeout);
+  if (err != 0)
+  {
+    std::cout << "error in bulk write: " << err << std::endl;
+  }
   return 0;
 }

@@ -25,6 +25,11 @@ int main()
   Mcu mcu;
   std::string temp = "yooo";
   mcu.init(temp);
+
+  // create message
+  unsigned char *msg = NULL;
+  mcu.usb_bulk_write(1, msg, sizeof(msg), 5);
+
   return 0;
 }
 

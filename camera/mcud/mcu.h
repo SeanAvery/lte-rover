@@ -2,6 +2,7 @@
 
 #include "include/libusb.h"
 #include <string>
+#include <mutex>
 
 #define TIMEOUT 0
 
