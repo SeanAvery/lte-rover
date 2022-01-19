@@ -127,6 +127,32 @@ int Mcu::usb_bulk_write(unsigned char endpoint, unsigned char* data, int length,
   if (err != 0)
   {
     std::cout << "error in bulk write: " << err << std::endl;
+
+    if (err == LIBUSB_ERROR_TIMEOUT)
+    {
+      std::cout << "write timed out" << std::endl;
+
+    }
+    else if (err == LIBUSB_ERROR_PIPE)
+    {
+      std::cout << "endpoint halted" << std::endl;
+    }
+    else if (err == LIBUSB_ERROR_OVERFLOW)
+    {
+      std::cout << "packet overflow" << std::endl;
+    }
+    else if (err == LIBUSB_ERROR_NO_DEVICE)
+    {
+      std::cout << "device is disconnected" << std::endl;
+    }
+    else if (err == LIBUSB_ERROR_BUSY)
+    {
+      std::cout << "device busy" << std::endl;
+    }
+    else if (err == LIBUSB_ERROR_INVALID_PARAM)
+    {
+      std::cout << "invalid param" << std::endl;
+    }
   }
   return 0;
 }
