@@ -91,7 +91,7 @@ int Mcu::init_usb_context(libusb_context **context)
      std::cout << "libusb initialization error" << std::endl;
      return err;
   }
-  libusb_set_debug(*context, 3);
+  libusb_set_debug(*context, 6);
   return 0;
 }
 

@@ -27,9 +27,9 @@ int main()
   mcu.init(temp);
 
   // create message
-  unsigned char msg[20] = "s170#";
+  unsigned char msg[20] = "s200#";
   // mcu.usb_bulk_write(1, msg, 5, 5);
-  mcu.usb_bulk_write(3, msg, 5, 0);
+  mcu.usb_bulk_write(2, msg, 20, 0);
 
   return 0;
 }
