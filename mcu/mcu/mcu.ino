@@ -35,8 +35,8 @@ void setup() {
   serialPort.begin(115200);
   Serial.println("serial port is connected");
   // setup pwm pins for steering and motor control
-  steeringServo.attach(9);
-  // motorEsc.attach(9);
+  steeringServo.attach(11);
+  motorEsc.attach(12);
   Serial.println("motor esc attatched");
 }
 
@@ -66,61 +66,72 @@ bool throttle_safe(int value)
   return true;
 }
 
-//void loop() {
-//  if (serialPort.available())
-//  {
-//    char serialMsg[7];
-//    size_t msgLength = serialPort.readBytesUntil(escapeIndex, serialMsg, 34);
-//
-//    char header;
-//    int value;
-//    sscanf(serialMsg, "%c%5d", header, &value);
-//
-//    if (serialMsg[0] == throttleIndex) {
-//      if (throttle_safe(value))
-//      {
-//        throttle = value;
-//      }
-//    }
-//    else if (serialMsg[0] == steeringIndex)
-//    {
-//      if (steering_safe(value))
-//      {
-//        angle = value;
-//      }
-//    }
-//  }
-//  // motorEsc.write(throttle);
-//  delay(100);
-//  steeringServo.write(angle);
-//}
+void loop() {
+  if (serialPort.available())
+  {
+    char serialMsg[7];
+    size_t msgLength = serialPort.readBytesUntil(escapeIndex, serialMsg, 34);
+
+    char header;
+    int value;
+    sscanf(serialMsg, "%c%5d", header, &value);
+
+    if (serialMsg[0] == throttleIndex) {
+      if (throttle_safe(value))
+      {
+        throttle = value;
+      }
+    }
+    else if (serialMsg[0] == steeringIndex)
+    {
+      if (steering_safe(value))
+      {
+        angle = value;
+      }
+    }
+  }
+  motorEsc.write(throttle);
+  delay(100);
+  steeringServo.write(angle);
+}
 
 
 /* TESTS */
 
 // steering test loop
 
-bool dir = true;
-void loop() {
-  delay(10);
-  if (dir)
-  {
-    angle = angle + 1;
-  }
-  else
-  {
-    angle = angle - 1;
-  }
+//bool dir = true;
+//void loop() {
+//  delay(10);
+//  if (dir)
+//  {
+//    angle = angle + 1;
+//  }
+//  else
+//  {
+//    angle = angle - 1;
+//  }
+//
+//  if (steering_safe(angle)) 
+//  {
+//      Serial.print(angle);
+//  Serial.println("");
+//   steeringServo.write(angle); 
+//  }
+//  if (!steering_safe(angle))
+//  {
+//    dir = !dir;
+//  }
+//}
 
-  if (steering_safe(angle)) 
-  {
-      Serial.print(angle);
-  Serial.println("");
-   steeringServo.write(angle); 
-  }
-  if (!steering_safe(angle))
-  {
-    dir = !dir;
-  }
-}
+
 // motor test loop
+//bool dir = true;
+//void loop() {
+//  delay(1);
+//  motorEsc.write(94);
+//  delay(1);
+//  motorEsc.write(95);
+//  delay(1);
+//  motorEsc.write(94);
+//}
