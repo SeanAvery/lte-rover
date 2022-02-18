@@ -26,12 +26,12 @@ if __name__ == "__main__":
   for x in range(5):
     while steering_val < max_steering:
       time.sleep(0.05)
-      steering = format_msg("f", steering_val)
+      steering = format_msg(steering_index, steering_val)
       ser.write(steering)
       steering_val = steering_val + 1
     while steering_val > min_steering:
       time.sleep(0.05)
-      steering = format_msg("f", steering_val)
+      steering = format_msg(steering_index, steering_val)
       ser.write(steering)
       steering_val = steering_val - 1
 
