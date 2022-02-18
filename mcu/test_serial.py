@@ -27,16 +27,13 @@ if __name__ == "__main__":
   # test sending command over the wire
   while True:
     # read serial port for logs
-    # log = ser.readline().decode('utf8')
-    # print(log)
+    log = ser.readline().decode('utf8')
+    print(log)
+
     # update commands
-    throttle_val += 1
     throttle = format_msg(throttle_index, 110)
-    steering_val += 1
     steering = format_msg(steering_index, steering_val)
     time.sleep(0.1)
-    # ser.write(steering)
+    ser.write(steering)
     time.sleep(0.1)
-    print(throttle_val)
-    ser.write(throttle)
 
