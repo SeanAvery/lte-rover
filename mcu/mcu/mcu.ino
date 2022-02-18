@@ -67,71 +67,38 @@ bool throttle_safe(int value)
 }
 
 void loop() {
+  delay(10);
   if (serialPort.available())
   {
     char serialMsg[7];
-    size_t msgLength = serialPort.readBytesUntil(escapeIndex, serialMsg, 34);
+    size_t msgLength = serialPort.readBytesUntil(escapeIndex, serialMsg, 6);
 
-    char header;
-    int value;
-    sscanf(serialMsg, "%c%5d", header, &value);
-
-    if (serialMsg[0] == throttleIndex) {
-      if (throttle_safe(value))
-      {
-        throttle = value;
-      }
-    }
-    else if (serialMsg[0] == steeringIndex)
+    if (msgLength == 6)
     {
-      if (steering_safe(value))
+      char header;
+      int value;
+      sscanf(serialMsg, "%c%5d", header, &value);
+
+      if (serialMsg[0] == throttleIndex) {
+        if (throttle_safe(value))
+        {
+          Serial.println(value);
+          throttle = value;
+        }
+      }
+      else if (serialMsg[0] == steeringIndex)
       {
+        if (steering_safe(value))
+        {
+          angle = value;
+        }
         angle = value;
       }
     }
   }
   motorEsc.write(throttle);
-  delay(100);
   steeringServo.write(angle);
 }
 
 
 /* TESTS */
-
-// steering test loop
-
-//bool dir = true;
-//void loop() {
-//  delay(10);
-//  if (dir)
-//  {
-//    angle = angle + 1;
-//  }
-//  else
-//  {
-//    angle = angle - 1;
-//  }
-//
-//  if (steering_safe(angle)) 
-//  {
-//      Serial.print(angle);
-//  Serial.println("");
-//   steeringServo.write(angle); 
-//  }
-//  if (!steering_safe(angle))
-//  {
-//    dir = !dir;
-//  }
-//}
-
-
-// motor test loop
-//bool dir = true;
-//void loop() {
-//  delay(1);
-//  motorEsc.write(94);
-//  delay(1);
-//  motorEsc.write(95);
-//  delay(1);
-//  motorEsc.write(94);
-//}
