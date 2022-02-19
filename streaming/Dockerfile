@@ -27,7 +27,7 @@ RUN cd ${BUILD_SRC} \
 	&& chmod +x autogen.sh \
       	&& ./autogen.sh \
       	&& ./configure --prefix=/janus \
-      	--disable-websockets --disable-data-channels --disable-rabbitmq --disable-mqt --disable-all-handlers \
+      	--enable-http --disable-websockets --disable-data-channels --disable-rabbitmq --disable-mqt --disable-all-handlers \
       	&& make \
       	&& make install
 
