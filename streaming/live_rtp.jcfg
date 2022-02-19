@@ -1,0 +1,11 @@
+live-rtp: {
+	type = "rtp"
+	id = 1
+	description = "RTP to WebRTC bridge."
+	video = true
+	audio = false
+	videoport = 5000
+	videopt = 96
+	videortpmap = "H264/90000"
+	secret = "adminpwd"
+}
