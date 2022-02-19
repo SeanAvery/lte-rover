@@ -31,3 +31,6 @@ RUN cd ${BUILD_SRC} \
       	&& make \
       	&& make install
 
+# run janus
+Add rtp-live.jcfg /rtp-live.jcfg
+
