@@ -8,7 +8,7 @@ Servo steeringServo;
 Servo motorEsc;
 
 // usb port communication rx: 0, tx: 1
-SoftwareSerial serialPort(0, 1);
+//SoftwareSerial serialPort(0, 1);
 
 // global variables
 int angle = 90;
@@ -32,12 +32,12 @@ void setup() {
   while (!Serial) {
     ;
   }
-  serialPort.begin(115200);
+//  serialPort.begin(115200);
   Serial.println("serial port is connected");
-  // setup pwm pins for steering and motor control
+//  // setup pwm pins for steering and motor control
   steeringServo.attach(5);
   motorEsc.attach(6);
-  Serial.println("motor esc attatched");
+//  Serial.println("motor esc attatched");
 }
 
 bool steering_safe(int value)
@@ -68,10 +68,10 @@ bool throttle_safe(int value)
 
 void loop() {
   delay(10);
-  if (serialPort.available())
+  if (Serial.available())
   {
     char serialMsg[7];
-    size_t msgLength = serialPort.readBytesUntil(escapeIndex, serialMsg, 6);
+    size_t msgLength = Serial.readBytesUntil(escapeIndex, serialMsg, 6);
 
     if (msgLength == 6)
     {
@@ -102,7 +102,7 @@ void loop() {
 /* TESTS */
 
 // steering test loop
-//
+
 //bool dir = true;
 //void loop() {
 //  delay(10);
@@ -117,9 +117,9 @@ void loop() {
 //
 //  if (steering_safe(angle)) 
 //  {
-//    Serial.print(angle);
-//    steeringServo.write(angle);
+////    Serial.print(angle);
 //    motorEsc.write(94);
+//    steeringServo.write(angle);
 //  }
 //  if (!steering_safe(angle))
 //  {
