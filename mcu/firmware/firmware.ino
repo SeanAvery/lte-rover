@@ -7,9 +7,6 @@
 Servo steeringServo;
 Servo motorEsc;
 
-// usb port communication rx: 0, tx: 1
-//SoftwareSerial serialPort(0, 1);
-
 // global variables
 int angle = 90;
 int throttle = 90;
@@ -32,12 +29,11 @@ void setup() {
   while (!Serial) {
     ;
   }
-//  serialPort.begin(115200);
   Serial.println("serial port is connected");
-//  // setup pwm pins for steering and motor control
-  steeringServo.attach(5);
-  motorEsc.attach(6);
-//  Serial.println("motor esc attatched");
+  // setup pwm pins for steering and motor control
+  steeringServo.attach(6);
+  motorEsc.attach(5);
+  Serial.println("motor esc attatched");
 }
 
 bool steering_safe(int value)
