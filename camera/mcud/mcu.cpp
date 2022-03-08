@@ -121,36 +121,35 @@ int Mcu::usb_bulk_read(unsigned char endpoint, unsigned char* data, int length, 
   int err;
   int transferred = 0;
   std::lock_guard lk(usb_lock);
-  err = libusb_bulk_transfer(dev_handle, endpoint, data, length, &transferred, timeout);
   // TODO: check if connected
-  if (err == LIBUSB_ERROR_TIMEOUT)
-  {
-    std::cout << "read transfer timed out" << std::endl;
-  }
-  if (err == LIBUSB_ERROR_PIPE)
-  {
-    std::cout << "read transfer endpoint halted" << std::endl;
-  }
-  if (err == LIBUSB_ERROR_OVERFLOW)
-  {
-    std::cout << "read transfer error. device offered too much data." << std::endl;
-  }
-  if (err == LIBUSB_ERROR_NO_DEVICE)
-  {
-    std::cout << "device has disconnected" << std::endl;
-  }
-  if (err == LIBUSB_ERROR_BUSY)
-  {
-    std::cout << "device is busy" << std::endl;
-  }
-  if (err == LIBUSB_ERROR_INVALID_PARAM)
-  {
-    std::cout << "transfer size limitation" << std::endl;
-  }
+  err = libusb_bulk_transfer(dev_handle, endpoint, data, length, &transferred, timeout);
   if (err != 0)
   {
     std::cout << "bulk read error: " << err << std::endl;
-    
+    if (err == LIBUSB_ERROR_TIMEOUT)
+    {
+      std::cout << "read transfer timed out" << std::endl;
+    }
+    if (err == LIBUSB_ERROR_PIPE)
+    {
+      std::cout << "read transfer endpoint halted" << std::endl;
+    }
+    if (err == LIBUSB_ERROR_OVERFLOW)
+    {
+      std::cout << "read transfer error. device offered too much data." << std::endl;
+    }
+    if (err == LIBUSB_ERROR_NO_DEVICE)
+    {
+      std::cout << "device has disconnected" << std::endl;
+    }
+    if (err == LIBUSB_ERROR_BUSY)
+    {
+      std::cout << "device is busy" << std::endl;
+    }
+    if (err == LIBUSB_ERROR_INVALID_PARAM)
+    {
+      std::cout << "transfer size limitation" << std::endl;
+    }
   }
   return err;
 }
