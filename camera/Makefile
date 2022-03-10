@@ -9,7 +9,7 @@ up-camerad:
 	scp camera root@$(IP):/data
 
 build-mcud:
-	clang++ -std=c++17 $(pkg-config --cflags libusb-1.0) mcud/main.cpp -lusb-1.0 -o mcu $(pkg-config --cflags libusb-1.0)
+	clang++ -std=c++17 $(pkg-config --cflags libusb-1.0) mcud/main.cpp -lusb-1.0 -I ./cereal -o mcu $(pkg-config --cflags libusb-1.0)
 
 push-mcud:
 	scp mcu root@$(IP):/data
@@ -18,4 +18,4 @@ push-joypadd:
 	scp joypadd/server.py root@$(IP):/data
 
 build-controllerd:
-	clang++ --std=c++17 -I ./cereal controllerd/main.cpp -o controller
+	clang++ --std=c++17 -I ./cereal -L /data/lte-rover/camera/cereal controllerd/main.cpp -o controller -l messaging -l zmq
