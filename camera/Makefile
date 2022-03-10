@@ -16,3 +16,6 @@ push-mcud:
 
 push-joypadd:
 	scp joypadd/server.py root@$(IP):/data
+
+build-controllerd:
+	clang++ --std=c++17 controllerd/main.cpp -o controller
