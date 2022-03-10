@@ -6,4 +6,4 @@
 	url = https://android.googlesource.com/toolchain/binutils
 [submodule "camera/cereal"]
 	path = camera/cereal
-        url = https://github.com/SeanAvery/cereal.git
+	url = https://github.com/SeanAvery/cereal.git
