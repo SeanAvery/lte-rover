@@ -15,3 +15,5 @@ Camera is a comma.ai style andrioid phone with front/back image sensor. The MCU 
 
 
 ### video flow
+
+![videostream](videostream.png)
