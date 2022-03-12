@@ -9,7 +9,7 @@ up-camerad:
 	scp camera root@$(IP):/data
 
 build-mcud:
-	clang++ -std=c++17 $(pkg-config --cflags libusb-1.0) mcud/main.cpp -lusb-1.0 -I ./cereal -o mcu $(pkg-config --cflags libusb-1.0)
+	clang++ -std=c++17 -I ./cereal -L ./cereal -lusb-1.0 mcud/main.cpp -o mcu -l messaging -l zmq
 
 push-mcud:
 	scp mcu root@$(IP):/data
