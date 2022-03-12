@@ -8,3 +8,10 @@ Imagine shredding new york city streets in a 1/8 scale that goes 40+ mph. doorda
 
 Camera is a comma.ai style andrioid phone with front/back image sensor. The MCU is a simple arduino nano that controls brushelss motor via BLX100 ESC and a steering servo.
 
+
+### controls flow
+
+![controls flow](controller.png)
+
+
+### video flow
