@@ -30,6 +30,7 @@ int main()
   // init subscribe
   Context *context = Context::create();
   SubSocket * subscriber = SubSocket::create(context, "controls");
+  subscriber->setTimeout(100);
 
 
   // create message
@@ -40,6 +41,8 @@ int main()
   {
     // dev handle 2
     usleep(10000);
+    // receive msg from subsocket
+    Message *controller_msg = subscriber->receive();
     std::cout << msg << std::endl;
     mcu.usb_bulk_write(2, msg, 8, 0);
     usleep(10000);
