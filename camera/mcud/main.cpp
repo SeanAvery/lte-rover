@@ -46,11 +46,14 @@ int main()
 
     if (controller_msg == nullptr)
     {
+      std::cout << "no message here" << std::endl;
       continue;
     }
     char * msg2 = controller_msg->getData();
+    unsigned char *msg3 = reinterpret_cast<unsigned char *>(msg2);
     std::cout << "sub msg: " << msg2 << std::endl;
-    mcu.usb_bulk_write(2, msg, 8, 0);
+    // mcu.usb_bulk_write(2, msg, 8, 0);
+    mcu.usb_bulk_write(2, msg3, sizeof(msg3), 0);
     usleep(10000);
     mcu.usb_bulk_read(130, ret_msg, 100, 100);
     std::string mytext(reinterpret_cast<char*>(ret_msg));

@@ -52,8 +52,10 @@ int main()
     std::cout << "checking socket" << std::endl;
     ssize_t n = recvfrom(sockfd, (char *)buffer, BUF_MAX, MSG_WAITALL, (struct sockaddr *) &client, &len);
 
+    std::cout << "udp msg: " << buffer << std::endl;
+
     // publish message
-    publisher->send(msg, sizeof(msg));
+    publisher->send(buffer, sizeof(buffer));
   }
 }
 
