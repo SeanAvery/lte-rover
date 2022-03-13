@@ -2,6 +2,7 @@
 #include <unistd.h>
 #include <memory>
 #include "mcu.cpp"
+#include "messaging/messaging.h"
 
 Mcu *usb_connect()
 {
@@ -21,10 +22,15 @@ Mcu *usb_connect()
 
 int main()
 {
-  std::cout << "setting up mcu daemon" << std::endl;
+  // init usb
   Mcu mcu;
   std::string temp = "yooo";
   mcu.init(temp);
+
+  // init subscribe
+  Context *context = Context::create();
+  SubSocket * subscriber = SubSocket::create(context, "controls");
+
 
   // create message
   unsigned char msg[] = "s00110#";
