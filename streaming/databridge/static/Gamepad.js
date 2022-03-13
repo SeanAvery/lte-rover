@@ -1,8 +1,11 @@
+
 let gamepad;
+
 
 const leftTrigger = 6;
 const rightTrigger = 7;
 
+// handle gamepad
 window.addEventListener("gamepadconnected", e => {
   console.log("gamepad connected")
   gamepad = navigator.getGamepads()[0]
@@ -15,6 +18,13 @@ window.addEventListener("gamepaddisconnected", e=> {
   console.log("gamepad disconnected")
 })
 
+
+// handle websocket
+const ws = new WebSocket("ws://localhost:8080")
+
+ws.onopen = () => {
+  console.log("websocket connected")
+}
 
 const gameLoop = () => {
   gamepad = navigator.getGamepads()[0]
