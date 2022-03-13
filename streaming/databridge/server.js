@@ -6,7 +6,7 @@ const path = require("path")
 const app = express()
 const server = http.createServer(app)
 const wss = new WebSocket.Server({ server })
-
+app.use(express.static("static"))
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "/static/index.html"))
 })
