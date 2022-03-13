@@ -32,9 +32,13 @@ int main()
   }
 
   // init publisher
-  std::string endpoint = "sensorEvents";
+  std::string endpoint = "controls";
   Context * context = Context::create();
   PubSocket *publisher = PubSocket::create(context, endpoint);
+
+
+  // dummy message
+  char msg[] = "s00070#";
 
 
   // init data container
@@ -43,10 +47,13 @@ int main()
 
   while (true)
   {
-    usleep(1000000);
+    usleep(100000);
     // check socket for msg
     std::cout << "checking socket" << std::endl;
     ssize_t n = recvfrom(sockfd, (char *)buffer, BUF_MAX, MSG_WAITALL, (struct sockaddr *) &client, &len);
+
+    // publish message
+    publisher->send(msg, sizeof(msg));
   }
 }
 
