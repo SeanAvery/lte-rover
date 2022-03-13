@@ -43,12 +43,18 @@ int main()
     usleep(10000);
     // receive msg from subsocket
     Message *controller_msg = subscriber->receive();
-    std::cout << msg << std::endl;
+
+    if (controller_msg == nullptr)
+    {
+      continue;
+    }
+    char * msg2 = controller_msg->getData();
+    std::cout << "sub msg: " << msg2 << std::endl;
     mcu.usb_bulk_write(2, msg, 8, 0);
     usleep(10000);
     mcu.usb_bulk_read(130, ret_msg, 100, 100);
     std::string mytext(reinterpret_cast<char*>(ret_msg));
-    std::cout << "return message: " << mytext << std::endl;
+    // std::cout << "return message: " << mytext << std::endl;
   }
 
   return 0;
