@@ -26,7 +26,6 @@ ws.onopen = () => {
 let throttle = 90
 const minThrottle = 90
 const maxThrottle = 100
-
 let steering = 90
 const minSteering = 70
 const maxSteering = 110
@@ -46,15 +45,17 @@ const gameLoop = () => {
     // steering = gamepd.axis[0] a
     console.log('axis', gamepad.axes)
     steering = Math.round(90 + gamepad.axes[0]*20)
+    
     console.log("steering: ", steering)
-    for (const button in gamepad.buttons) {
-      const value = gamepad.buttons[button].value
-      // console.log(value)
-      if (value > 0) {
-        console.log("hit: ", button)
-      }
-    }  
+
+    // format msg
+    let steeringMsg = "000" + steering
+    steeringMsg = steeringMsg.substr(steeringMsg.length - 5, steeringMsg.length)
+    steeringMsg = "s" + steeringMsg + "#"
+    console.log("steeringMsg", steeringMsg)
+    ws.send(steeringMsg)
+    
   }
 }
 
-window.setInterval(gameLoop, 1000)
+window.setInterval(gameLoop, 100)
