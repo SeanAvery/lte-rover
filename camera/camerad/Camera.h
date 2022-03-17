@@ -1,5 +1,6 @@
 #include <string>
 #include <fstream>
+#include <thread>
 
 #include <linux/ioctl.h>
 #include <linux/videodev2.h>
@@ -12,6 +13,10 @@
 #include "include/msmb_camera.h"
 #include "include/msmb_isp.h"
 #include "include/msmb_ispif.h"
+
+#include "messaging/messaging.h"
+#include "visionipc/visionbuf.h"
+#include "visionipc/visionipc.h"
 
 #define FRAME_BUF_COUNT 4
 #define METADATA_BUF_COUNT 4

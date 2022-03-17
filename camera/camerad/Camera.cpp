@@ -14,7 +14,7 @@
 #include <fstream>
 #include <sys/ioctl.h>
 #include <unistd.h>
-#include <fcntl.h> 
+#include <fcntl.h>
 #include <iterator>
 #include <assert.h>
 #include <string.h>
@@ -23,7 +23,6 @@
 
 void Camera::camera_open()
 {
- 
   std::cout << std::endl;
   std::cout << "opening subsystem files" << std::endl;
   msm_fd = HANDLE_EINTR(open(params::MSM_SUBSYSTEM, O_RDWR | O_NONBLOCK));
@@ -50,7 +49,7 @@ void Camera::camera_init()
 
   // sensor init
   sensorinit_fd =  HANDLE_EINTR(open(params::SENSORINIT_SUBSYSTEM, O_RDWR | O_NONBLOCK));
-  
+
   // slave info
   msm_camera_sensor_slave_info info = { // road camera;
     .sensor_name = "imx298",
@@ -210,7 +209,6 @@ void Camera::camera_init()
     },
   };
 
-  
   csid_params.lut_params.vc_cfg[0] = &csid_params.lut_params.vc_cfg_a[0];
   csid_params.lut_params.vc_cfg[1] = &csid_params.lut_params.vc_cfg_a[1];
   csid_params.lut_params.vc_cfg[2] = &csid_params.lut_params.vc_cfg_a[2];
@@ -290,7 +288,7 @@ void Camera::camera_init()
     update_cmd.update_type = UPDATE_STREAM_ADD_BUFQ;
     cam_ioctl(isp_fd, VIDIOC_MSM_ISP_UPDATE_STREAM, &update_cmd, "isp update stream");
   }
-   
+
   // start streams
 
   // subscribe event
@@ -305,7 +303,7 @@ void Camera::camera_init()
   {
     stream_cfg.stream_handle[i] = ss[i].stream_req.axi_stream_handle;
   }
-  cam_ioctl(isp_fd, VIDIOC_MSM_ISP_CFG_STREAM, &stream_cfg, "isp start stream"); 
+  cam_ioctl(isp_fd, VIDIOC_MSM_ISP_CFG_STREAM, &stream_cfg, "isp start stream");
 }
 
 void Camera::camera_run()
@@ -313,7 +311,7 @@ void Camera::camera_run()
   // start camera process thread
   std::cout << "start camera process thread" << std::endl;
   std::thread thread = std::thread(&Camera::camera_process, this);
-  
+
   std::cout << std::endl;
   std::cout << "camera_run" << std::endl;
   while(true)
@@ -332,11 +330,9 @@ void Camera::camera_run()
     std::cout << "fd: " << fds[0].fd << std::endl;
     std::cout << "events: " << fds[0].events << std::endl;
     std::cout << "revents: " << fds[0].revents << std::endl;
-    
     // if (!fds[0].revents) continue;
 
     std::cout << 2 << std::endl;
-    
     struct v4l2_event ev = {};
     ret = HANDLE_EINTR(ioctl(isp_fd, VIDIOC_DQEVENT, &ev));
     const msm_isp_event_data *isp_event_data = (const msm_isp_event_data *)ev.u.data;
@@ -376,13 +372,16 @@ void Camera::camera_run()
       std::cout << "ISP_EVENT_ERROR" << std::endl;
     }
   }
- 
 }
 
 void Camera::camera_process()
 {
   std::cout << "camera process thread here" << std::endl;
-
+  while (true)
+  {
+    usleep(100000);
+    std::cout << "process thread hit" << std::endl;
+  }
 }
 
 int Camera::sensor_write_regs(struct msm_camera_i2c_reg_array* arr, size_t size, msm_camera_i2c_data_type data_type)

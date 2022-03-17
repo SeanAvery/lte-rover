@@ -8,6 +8,5 @@ int main() {
   cam.camera_init();
   cam.camera_open();
   cam.camera_run();
-  
   return 0;
 }
