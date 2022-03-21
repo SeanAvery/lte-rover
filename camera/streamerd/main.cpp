@@ -7,6 +7,9 @@
 int main()
 {
   std::cout << "streamerd" << std::endl;
+
+  // setu omx encoder
+  auto encoder = new OmxEncoder();
   // camera stream subscriber
   Context *context = Context::create();
   SubSocket *subscriber = SubSocket::create(context, "roadCameraState");
