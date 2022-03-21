@@ -8,6 +8,6 @@ build-controllerd:
 	clang++ --std=c++17 -I ./cereal -L /data/lte-rover/camera/cereal controllerd/main.cpp -o controller -l messaging -l zmq
 
 build-streamerd:
-	clang++ --std=c++17 -I ./cereal -L ./cereal -I ./third-party/openmax/include streamerd/main.cpp -o streamer -l messaging -l zmq
+	clang++ --std=c++17 -I ./cereal -L ./cereal -I ./third-party/openmax/include streamerd/main.cpp -L /system/lib/ -L /system/vendor/lib/ -I ./common -o streamer -l messaging -l zmq -l OmxCore -v
 	
 # clang++ --std=c++17 -I /data/arm64/include/gstreamer-1.0 -L /data/arm64/lib -I ./cereal -L ./cereal streamerd/main.cpp -o streamer -l messaging -l zmq
