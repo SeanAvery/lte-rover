@@ -2,6 +2,8 @@
 
 #define PORT_INDEX_IN 0
 #define PORT_INDEX_OUT 1
+#define BITRATE 5000000
+#define FPS 20
 
 // Check the OMX error code and assert if an error occurred.
 #define OMX_CHECK(_expr)              \
@@ -124,8 +126,10 @@ static OMX_CALLBACKTYPE omx_callbacks = {
 
 OmxEncoder::OmxEncoder()
 {
-  this->width = 1156;
-  this->height = 771;
+  // this->width = 1156;
+  this->width = 1632;
+  this->height = 1224;
+  // this->fps = FPS;
   this->fps = 20;
 
   // h264
@@ -137,6 +141,8 @@ OmxEncoder::OmxEncoder()
     std::cout << "error getting omx codec" << std::endl;
   }
   assert(err == OMX_ErrorNone);
+
+  std::cout << "handle: " << this->handle << std::endl;
 
   // setup input port
   OMX_PARAM_PORTDEFINITIONTYPE in_port = {0};
@@ -155,8 +161,23 @@ OmxEncoder::OmxEncoder()
   // in_port.format.video.eColorFormat = OMX_COLOR_FormatYUV420SemiPlanar;
   in_port.format.video.eColorFormat = (OMX_COLOR_FORMATTYPE)QOMX_COLOR_FORMATYUV420PackedSemiPlanar32m;
 
+
   OMX_CHECK(OMX_SetParameter(this->handle, OMX_IndexParamPortDefinition, (OMX_PTR) &in_port));
 
+  OMX_CHECK(OMX_GetParameter(this->handle, OMX_IndexParamPortDefinition, (OMX_PTR) &in_port));
+
   this->in_buf_headers.resize(in_port.nBufferCountActual);
- 
+
+
+  // setup output port
+  OMX_PARAM_PORTDEFINITIONTYPE out_port = {0};
+  out_port.nSize = sizeof(out_port);
+  out_port.nPortIndex = (OMX_U32) PORT_INDEX_OUT;
+  OMX_CHECK(OMX_GetParameter(this->handle, OMX_IndexParamPortDefinition, (OMX_PTR)&out_port));
+  out_port.format.video.nFrameWidth = this->width;
+  out_port.format.video.nFrameHeight = this->height;
+  out_port.format.video.xFramerate = 0;
+  out_port.format.video.nBitrate = BITRATE;
+  // h264
+  out_port.format.video.eCompressionFormat = OMX_VIDEO_CodingAVC;
 }
