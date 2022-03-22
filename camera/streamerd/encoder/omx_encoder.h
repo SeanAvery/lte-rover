@@ -32,4 +32,7 @@ class OmxEncoder {
     SafeQueue<OMX_BUFFERHEADERTYPE *> free_in;
     SafeQueue<OMX_BUFFERHEADERTYPE *> done_out;
     SafeQueue<OmxBuffer *> to_write;
+
+    std::vector<OMX_BUFFERHEADERTYPE *> in_buf_headers;
+    std::vector<OMX_BUFFERHEADERTYPE *> out_buf_headers;   
 };

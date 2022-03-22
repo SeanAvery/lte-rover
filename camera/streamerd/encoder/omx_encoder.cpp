@@ -154,5 +154,9 @@ OmxEncoder::OmxEncoder()
   in_port.format.video.eCompressionFormat = OMX_VIDEO_CodingUnused;
   // in_port.format.video.eColorFormat = OMX_COLOR_FormatYUV420SemiPlanar;
   in_port.format.video.eColorFormat = (OMX_COLOR_FORMATTYPE)QOMX_COLOR_FORMATYUV420PackedSemiPlanar32m;
-  
+
+  OMX_CHECK(OMX_SetParameter(this->handle, OMX_IndexParamPortDefinition, (OMX_PTR) &in_port));
+
+  this->in_buf_headers.resize(in_port.nBufferCountActual);
+ 
 }
