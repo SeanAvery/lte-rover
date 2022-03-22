@@ -1,5 +1,7 @@
 #include <OMX_Component.h>
 #include <OMX_Core.h>
+#include <OMX_QCOMExtns.h>
+#include "include/msm_media_info.h"
 #include "queue.h"
 
 struct OmxBuffer {

@@ -1,5 +1,83 @@
 #include "omx_encoder.h"
 
+#define PORT_INDEX_IN 0
+#define PORT_INDEX_OUT 1
+
+// Check the OMX error code and assert if an error occurred.
+#define OMX_CHECK(_expr)              \
+  do {                                \
+    assert(OMX_ErrorNone == (_expr)); \
+  } while (0)
+
+static const char* omx_color_fomat_name(uint32_t format) __attribute__((unused));
+static const char* omx_color_fomat_name(uint32_t format) {
+  switch (format) {
+  case OMX_COLOR_FormatUnused: return "OMX_COLOR_FormatUnused";
+  case OMX_COLOR_FormatMonochrome: return "OMX_COLOR_FormatMonochrome";
+  case OMX_COLOR_Format8bitRGB332: return "OMX_COLOR_Format8bitRGB332";
+  case OMX_COLOR_Format12bitRGB444: return "OMX_COLOR_Format12bitRGB444";
+  case OMX_COLOR_Format16bitARGB4444: return "OMX_COLOR_Format16bitARGB4444";
+  case OMX_COLOR_Format16bitARGB1555: return "OMX_COLOR_Format16bitARGB1555";
+  case OMX_COLOR_Format16bitRGB565: return "OMX_COLOR_Format16bitRGB565";
+  case OMX_COLOR_Format16bitBGR565: return "OMX_COLOR_Format16bitBGR565";
+  case OMX_COLOR_Format18bitRGB666: return "OMX_COLOR_Format18bitRGB666";
+  case OMX_COLOR_Format18bitARGB1665: return "OMX_COLOR_Format18bitARGB1665";
+  case OMX_COLOR_Format19bitARGB1666: return "OMX_COLOR_Format19bitARGB1666";
+  case OMX_COLOR_Format24bitRGB888: return "OMX_COLOR_Format24bitRGB888";
+  case OMX_COLOR_Format24bitBGR888: return "OMX_COLOR_Format24bitBGR888";
+  case OMX_COLOR_Format24bitARGB1887: return "OMX_COLOR_Format24bitARGB1887";
+  case OMX_COLOR_Format25bitARGB1888: return "OMX_COLOR_Format25bitARGB1888";
+  case OMX_COLOR_Format32bitBGRA8888: return "OMX_COLOR_Format32bitBGRA8888";
+  case OMX_COLOR_Format32bitARGB8888: return "OMX_COLOR_Format32bitARGB8888";
+  case OMX_COLOR_FormatYUV411Planar: return "OMX_COLOR_FormatYUV411Planar";
+  case OMX_COLOR_FormatYUV411PackedPlanar: return "OMX_COLOR_FormatYUV411PackedPlanar";
+  case OMX_COLOR_FormatYUV420Planar: return "OMX_COLOR_FormatYUV420Planar";
+  case OMX_COLOR_FormatYUV420PackedPlanar: return "OMX_COLOR_FormatYUV420PackedPlanar";
+  case OMX_COLOR_FormatYUV420SemiPlanar: return "OMX_COLOR_FormatYUV420SemiPlanar";
+  case OMX_COLOR_FormatYUV422Planar: return "OMX_COLOR_FormatYUV422Planar";
+  case OMX_COLOR_FormatYUV422PackedPlanar: return "OMX_COLOR_FormatYUV422PackedPlanar";
+  case OMX_COLOR_FormatYUV422SemiPlanar: return "OMX_COLOR_FormatYUV422SemiPlanar";
+  case OMX_COLOR_FormatYCbYCr: return "OMX_COLOR_FormatYCbYCr";
+  case OMX_COLOR_FormatYCrYCb: return "OMX_COLOR_FormatYCrYCb";
+  case OMX_COLOR_FormatCbYCrY: return "OMX_COLOR_FormatCbYCrY";
+  case OMX_COLOR_FormatCrYCbY: return "OMX_COLOR_FormatCrYCbY";
+  case OMX_COLOR_FormatYUV444Interleaved: return "OMX_COLOR_FormatYUV444Interleaved";
+  case OMX_COLOR_FormatRawBayer8bit: return "OMX_COLOR_FormatRawBayer8bit";
+  case OMX_COLOR_FormatRawBayer10bit: return "OMX_COLOR_FormatRawBayer10bit";
+  case OMX_COLOR_FormatRawBayer8bitcompressed: return "OMX_COLOR_FormatRawBayer8bitcompressed";
+  case OMX_COLOR_FormatL2: return "OMX_COLOR_FormatL2";
+  case OMX_COLOR_FormatL4: return "OMX_COLOR_FormatL4";
+  case OMX_COLOR_FormatL8: return "OMX_COLOR_FormatL8";
+  case OMX_COLOR_FormatL16: return "OMX_COLOR_FormatL16";
+  case OMX_COLOR_FormatL24: return "OMX_COLOR_FormatL24";
+  case OMX_COLOR_FormatL32: return "OMX_COLOR_FormatL32";
+  case OMX_COLOR_FormatYUV420PackedSemiPlanar: return "OMX_COLOR_FormatYUV420PackedSemiPlanar";
+  case OMX_COLOR_FormatYUV422PackedSemiPlanar: return "OMX_COLOR_FormatYUV422PackedSemiPlanar";
+  case OMX_COLOR_Format18BitBGR666: return "OMX_COLOR_Format18BitBGR666";
+  case OMX_COLOR_Format24BitARGB6666: return "OMX_COLOR_Format24BitARGB6666";
+  case OMX_COLOR_Format24BitABGR6666: return "OMX_COLOR_Format24BitABGR6666";
+
+  case OMX_COLOR_FormatAndroidOpaque: return "OMX_COLOR_FormatAndroidOpaque";
+  case OMX_TI_COLOR_FormatYUV420PackedSemiPlanar: return "OMX_TI_COLOR_FormatYUV420PackedSemiPlanar";
+  case OMX_QCOM_COLOR_FormatYVU420SemiPlanar: return "OMX_QCOM_COLOR_FormatYVU420SemiPlanar";
+  case OMX_QCOM_COLOR_FormatYUV420PackedSemiPlanar64x32Tile2m8ka: return "OMX_QCOM_COLOR_FormatYUV420PackedSemiPlanar64x32Tile2m8ka";
+  case OMX_SEC_COLOR_FormatNV12Tiled: return "OMX_SEC_COLOR_FormatNV12Tiled";
+  case OMX_QCOM_COLOR_FormatYUV420PackedSemiPlanar32m: return "OMX_QCOM_COLOR_FormatYUV420PackedSemiPlanar32m";
+
+  // case QOMX_COLOR_FormatYVU420SemiPlanar: return "QOMX_COLOR_FormatYVU420SemiPlanar";
+  case QOMX_COLOR_FormatYVU420PackedSemiPlanar32m4ka: return "QOMX_COLOR_FormatYVU420PackedSemiPlanar32m4ka";
+  case QOMX_COLOR_FormatYUV420PackedSemiPlanar16m2ka: return "QOMX_COLOR_FormatYUV420PackedSemiPlanar16m2ka";
+  // case QOMX_COLOR_FormatYUV420PackedSemiPlanar64x32Tile2m8ka: return "QOMX_COLOR_FormatYUV420PackedSemiPlanar64x32Tile2m8ka";
+  // case QOMX_COLOR_FORMATYUV420PackedSemiPlanar32m: return "QOMX_COLOR_FORMATYUV420PackedSemiPlanar32m";
+  case QOMX_COLOR_FORMATYUV420PackedSemiPlanar32mMultiView: return "QOMX_COLOR_FORMATYUV420PackedSemiPlanar32mMultiView";
+  case QOMX_COLOR_FORMATYUV420PackedSemiPlanar32mCompressed: return "QOMX_COLOR_FORMATYUV420PackedSemiPlanar32mCompressed";
+  case QOMX_COLOR_Format32bitRGBA8888: return "QOMX_COLOR_Format32bitRGBA8888";
+  case QOMX_COLOR_Format32bitRGBA8888Compressed: return "QOMX_COLOR_Format32bitRGBA8888Compressed";
+
+  default:
+    return "unkn";
+  }
+}
 
 // OMX callbakcs
 
@@ -48,8 +126,33 @@ OmxEncoder::OmxEncoder()
 {
   this->width = 1156;
   this->height = 771;
+  this->fps = 20;
+
   // h264
   auto component = (OMX_STRING)("OMX.qcom.video.encoder.avc");
   
   int err = OMX_GetHandle(&this->handle, component, this, &omx_callbacks);
+  if (err != OMX_ErrorNone)
+  {
+    std::cout << "error getting omx codec" << std::endl;
+  }
+  assert(err == OMX_ErrorNone);
+
+  // setup input port
+  OMX_PARAM_PORTDEFINITIONTYPE in_port = {0};
+  in_port.nSize = sizeof(in_port);
+  in_port.nPortIndex = (OMX_U32) PORT_INDEX_IN;
+  OMX_CHECK(OMX_GetParameter(this->handle, OMX_IndexParamPortDefinition, (OMX_PTR) &in_port));
+
+  in_port.format.video.nFrameWidth = this->width;
+  in_port.format.video.nFrameHeight = this->height;
+  in_port.format.video.nStride = VENUS_Y_STRIDE(COLOR_FMT_NV12, this->width);
+  in_port.format.video.nSliceHeight = this->height;
+  // in_port.nBufferSize = (this->width * this->height * 3) / 2;
+  in_port.nBufferSize = VENUS_BUFFER_SIZE(COLOR_FMT_NV12, this->width, this->height);
+  in_port.format.video.xFramerate = (this->fps * 65536);
+  in_port.format.video.eCompressionFormat = OMX_VIDEO_CodingUnused;
+  // in_port.format.video.eColorFormat = OMX_COLOR_FormatYUV420SemiPlanar;
+  in_port.format.video.eColorFormat = (OMX_COLOR_FORMATTYPE)QOMX_COLOR_FORMATYUV420PackedSemiPlanar32m;
+  
 }
