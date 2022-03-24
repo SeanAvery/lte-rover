@@ -161,7 +161,6 @@ OmxEncoder::OmxEncoder()
   // in_port.format.video.eColorFormat = OMX_COLOR_FormatYUV420SemiPlanar;
   in_port.format.video.eColorFormat = (OMX_COLOR_FORMATTYPE)QOMX_COLOR_FORMATYUV420PackedSemiPlanar32m;
 
-
   OMX_CHECK(OMX_SetParameter(this->handle, OMX_IndexParamPortDefinition, (OMX_PTR) &in_port));
 
   OMX_CHECK(OMX_GetParameter(this->handle, OMX_IndexParamPortDefinition, (OMX_PTR) &in_port));
@@ -180,4 +179,21 @@ OmxEncoder::OmxEncoder()
   out_port.format.video.nBitrate = BITRATE;
   // h264
   out_port.format.video.eCompressionFormat = OMX_VIDEO_CodingAVC;
+
+  out_port.format.video.eColorFormat = OMX_COLOR_FormatUnused;
+
+  OMX_CHECK(OMX_SetParameter(this->handle, OMX_IndexParamPortDefinition, (OMX_PTR) &out_port));
+
+  
+  OMX_CHECK(OMX_GetParameter(this->handle, OMX_IndexParamPortDefinition, (OMX_PTR) &out_port));
+
+  this->out_buf_headers.resize(out_port.nBufferCountActual);
+
+  OMX_VIDEO_PARAM_BITRATETYPE bitrate_type = {0};
+  bitrate_type.nSize = sizeof(bitrate_type);
+  bitrate_type.nPortIndex = (OMX_U32) PORT_INDEX_OUT;
+  OMX_CHECK(OMX_GetParameter(this->handle, OMX_IndexParamVideoBitrate, (OMX_PTR) &bitrate_type));
+  bitrate_type.eControlRate = OMX_Video_ControlRateVariable;
+  bitrate_type.nTargetBitrate = BITRATE;
+
 }
