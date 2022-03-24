@@ -8,6 +8,9 @@ build-controllerd:
 	clang++ --std=c++17 -I ./cereal -L /data/lte-rover/camera/cereal controllerd/main.cpp -o controller -l messaging -l zmq
 
 build-streamerd:
-	clang++ --std=c++17 -I ./cereal -L ./cereal -I ./third-party/openmax/include streamerd/main.cpp -L /system/lib/ -L /system/vendor/lib/ -I ./common -I./streamerd/encoder/incude -o streamer -l messaging -l zmq -l OmxCore -l OmxVenc
+	clang++ --std=c++17 -I ./cereal -L ./cereal -I ./third-party/openmax/include streamerd/main.cpp -I ./common -I./streamerd/encoder/incude -L /system/vendor/lib64 -L /system/comma/usr/lib -L /user/local/lib -L /usr/lib -I third-party/opencl/include -o streamer -l messaging -l zmq -l OmxCore -l OmxVenc -l gsl -l CB -l OpenCL
+
+# clang++ --std=c++17 -I ./cereal -L ./cereal -I ./third-party/openmax/include streamerd/main.cpp -L /system/lib/ -L /system/vendor/lib64 -I ./common -I./streamerd/encoder/incude -I third-party/opencl/include -o streamer -l messaging -l zmq -l OmxCore -l OmxVenc -l gsl -l OpenCL
+
 	
-# clang++ --std=c++17 -I /data/arm64/include/gstreamer-1.0 -L /data/arm64/lib -I ./cereal -L ./cereal streamerd/main.cpp -o streamer -l messaging -l zmq
+# clang++ --std=c++17 -I /data/arm64/include/gstreamer-1.0 -L /data/arm64/lib -I ./cereal -L ./cereal  -I third-party/opencl/include streamerd/main.cpp -o streamer -l messaging -l zmq
