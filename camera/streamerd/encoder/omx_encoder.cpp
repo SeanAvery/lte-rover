@@ -251,4 +251,15 @@ OmxEncoder::OmxEncoder()
 
   std::cout << "omx state executing" << std::endl;
 
+  // give omx all the output buffers
+  for (auto &buf : this->out_buf_headers) {
+    // printf("fill %p\n", this->out_buf_headers[i]);
+    OMX_CHECK(OMX_FillThisBuffer(this->handle, buf));
+  }
+
+  // fill the input free queue
+  for (auto &buf : this->in_buf_headers) {
+    this->free_in.push(buf);
+  }
+
 }
