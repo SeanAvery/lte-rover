@@ -1,3 +1,4 @@
+# build scripts 
 build-camerad:
 	clang++ --std=c++17 -I ./third-party/opencl/include -L ./third-party/opencl/include -I ./cereal -L ./cereal  camerad/main.cpp -o camera -l messaging -l zmq
 
@@ -10,7 +11,8 @@ build-controllerd:
 build-streamerd:
 	clang++ --std=c++17 -I ./cereal -L ./cereal -I ./third-party/openmax/include streamerd/main.cpp -I ./common -I./streamerd/encoder/incude -L /system/vendor/lib64 -L /system/comma/usr/lib -L /user/local/lib -L /usr/lib -I third-party/opencl/include -o streamer -l messaging -l zmq -l OmxCore -l OmxVenc -l gsl -l CB -l OpenCL
 
-# clang++ --std=c++17 -I ./cereal -L ./cereal -I ./third-party/openmax/include streamerd/main.cpp -L /system/lib/ -L /system/vendor/lib64 -I ./common -I./streamerd/encoder/incude -I third-party/opencl/include -o streamer -l messaging -l zmq -l OmxCore -l OmxVenc -l gsl -l OpenCL
+# tools
 
-	
-# clang++ --std=c++17 -I /data/arm64/include/gstreamer-1.0 -L /data/arm64/lib -I ./cereal -L ./cereal  -I third-party/opencl/include streamerd/main.cpp -o streamer -l messaging -l zmq
+start-camerad:
+	chmod +x ./scripts/start_camerad_wide.sh
+	./scripts/start_camerad_wide.sh
