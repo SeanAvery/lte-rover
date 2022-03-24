@@ -241,4 +241,14 @@ OmxEncoder::OmxEncoder()
                              out_port.nBufferSize));
   }
 
+  wait_for_state(OMX_StateIdle);
+
+  std::cout << "omx setate idle" << std::endl;
+
+  OMX_CHECK(OMX_SendCommand(this->handle, OMX_CommandStateSet, OMX_StateExecuting, NULL));
+
+  wait_for_state(OMX_StateExecuting);
+
+  std::cout << "omx state executing" << std::endl;
+
 }
