@@ -35,4 +35,6 @@ class OmxEncoder {
 
     std::vector<OMX_BUFFERHEADERTYPE *> in_buf_headers;
     std::vector<OMX_BUFFERHEADERTYPE *> out_buf_headers;   
+
+    void wait_for_state(OMX_STATETYPE state);
 };

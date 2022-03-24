@@ -83,6 +83,13 @@ static const char* omx_color_fomat_name(uint32_t format) {
 
 // OMX callbakcs
 
+void OmxEncoder::wait_for_state(OMX_STATETYPE state) {
+  std::unique_lock lk(this->state_lock);
+  while (this->state != state) {
+    this->state_cv.wait(lk);
+  }
+};
+
 OMX_ERRORTYPE OmxEncoder::event_handler(OMX_HANDLETYPE component, OMX_PTR app_data, OMX_EVENTTYPE event,
                                    OMX_U32 data1, OMX_U32 data2, OMX_PTR event_data) {
   OmxEncoder *e = (OmxEncoder*)app_data;
@@ -221,4 +228,17 @@ OmxEncoder::OmxEncoder()
   avc.bconstIpred = OMX_TRUE;
 
   OMX_CHECK(OMX_SetParameter(this->handle, OMX_IndexParamVideoAvc, &avc));
+
+  OMX_CHECK(OMX_SendCommand(this->handle, OMX_CommandStateSet, OMX_StateIdle, NULL));
+
+  for (auto &buf : this->in_buf_headers) {
+    OMX_CHECK(OMX_AllocateBuffer(this->handle, &buf, PORT_INDEX_IN, this,
+                             in_port.nBufferSize));
+  }
+
+  for (auto &buf : this->out_buf_headers) {
+    OMX_CHECK(OMX_AllocateBuffer(this->handle, &buf, PORT_INDEX_OUT, this,
+                             out_port.nBufferSize));
+  }
+
 }
