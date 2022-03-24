@@ -196,4 +196,29 @@ OmxEncoder::OmxEncoder()
   bitrate_type.eControlRate = OMX_Video_ControlRateVariable;
   bitrate_type.nTargetBitrate = BITRATE;
 
+  OMX_CHECK(OMX_SetParameter(this->handle, OMX_IndexParamVideoBitrate, (OMX_PTR) &bitrate_type));
+
+  // setup h264 stuff
+  // setup h264
+  OMX_VIDEO_PARAM_AVCTYPE avc = { 0 };
+  avc.nSize = sizeof(avc);
+  avc.nPortIndex = (OMX_U32) PORT_INDEX_OUT;
+  OMX_CHECK(OMX_GetParameter(this->handle, OMX_IndexParamVideoAvc, &avc));
+
+  avc.nBFrames = 0;
+  avc.nPFrames = 15;
+
+  avc.eProfile = OMX_VIDEO_AVCProfileHigh;
+  avc.eLevel = OMX_VIDEO_AVCLevel31;
+
+  avc.nAllowedPictureTypes |= OMX_VIDEO_PictureTypeB;
+  avc.eLoopFilterMode = OMX_VIDEO_AVCLoopFilterEnable;
+
+  avc.nRefFrames = 1;
+  avc.bUseHadamard = OMX_TRUE;
+  avc.bEntropyCodingCABAC = OMX_TRUE;
+  avc.bWeightedPPrediction = OMX_TRUE;
+  avc.bconstIpred = OMX_TRUE;
+
+  OMX_CHECK(OMX_SetParameter(this->handle, OMX_IndexParamVideoAvc, &avc));
 }
