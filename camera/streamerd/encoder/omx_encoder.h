@@ -13,6 +13,8 @@ class OmxEncoder {
   public:
     OmxEncoder();
     ~OmxEncoder();
+    
+    void encoder_open(const char* path);
     int encode_frame();
 
     // OMX callbacks

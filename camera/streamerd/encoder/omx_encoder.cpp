@@ -263,3 +263,10 @@ OmxEncoder::OmxEncoder()
   }
 
 }
+
+void OmxEncoder::encoder_open(const char* path)
+{
+  // do i need to remux???
+  std::cout << "encoder open" << std::endl;
+  // may need to write file to rtp io socket
+}
