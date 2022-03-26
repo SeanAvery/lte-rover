@@ -4,37 +4,20 @@
 #include "mcu.cpp"
 #include "messaging/messaging.h"
 
-Mcu *usb_connect()
-{
-  std::unique_ptr<Mcu> mcu;
-  try
-  {
-    mcu = std::make_unique<Mcu>();
-    std::string serial_port = "/temp";
-    mcu->init(serial_port);
-  }
-  catch (std::exception &e)
-  {
-    std::cout << "exception in Mcu init" << std::endl;
-    return nullptr;
-  }
-}
-
 int main()
 {
   // init usb
   Mcu mcu;
-  std::string temp = "yooo";
-  mcu.init(temp);
+  mcu.init();
+  usleep(2000);
 
-  // init subscribe
+  // init subscriber
   Context *context = Context::create();
   SubSocket * subscriber = SubSocket::create(context, "controls");
   subscriber->setTimeout(100);
 
 
   // create message
-  unsigned char msg[] = "s00110#";
   unsigned char ret_msg[100];
 
   while(true)
@@ -49,15 +32,13 @@ int main()
       std::cout << "no message here" << std::endl;
       continue;
     }
-    char * msg2 = controller_msg->getData();
-    unsigned char *msg3 = reinterpret_cast<unsigned char *>(msg2);
-    std::cout << "sub msg: " << msg2 << std::endl;
-    // mcu.usb_bulk_write(2, msg, 8, 0);
-    mcu.usb_bulk_write(2, msg3, sizeof(msg3), 0);
-    usleep(10000);
+    char * raw_command = controller_msg->getData();
+    unsigned char * command = reinterpret_cast<unsigned char *>(raw_command);
+    mcu.usb_bulk_write(2, command, sizeof(command), 10);
+    usleep(100);
     mcu.usb_bulk_read(130, ret_msg, 100, 100);
     std::string mytext(reinterpret_cast<char*>(ret_msg));
-    // std::cout << "return message: " << mytext << std::endl;
+    std::cout << "return message: " << mytext << std::endl;
   }
 
   return 0;

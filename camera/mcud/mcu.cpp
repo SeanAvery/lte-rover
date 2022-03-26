@@ -6,7 +6,7 @@
 #include <mutex>
 #include <assert.h>
 
-int Mcu::init(std::string serial)
+int Mcu::init()
 {
   // init libusb
   std::cout << "initializing usb connection" << std::endl;
@@ -18,9 +18,6 @@ int Mcu::init(std::string serial)
     std::cout << "failed to init usb context" << std::endl;
     return err;
   }
-
-  // set libusb debug level
-  libusb_set_debug(ctx, 3);
 
   // find mcu device
   num_devices = libusb_get_device_list(ctx, &dev_list);
@@ -43,19 +40,17 @@ int Mcu::init(std::string serial)
         std::cout << "dev_handle not found" << std::endl;
         return 1;
       }
-      unsigned char desc_serial[100] = { 0 };
-      // int ret = libusb_get_string_descriptor_ascii(dev_handle, desc.iSerialNumber, desc_serial, std::size(desc_serial));
-      // int ret = libusb_get_string_descriptor_ascii(dev_handle, desc.iSerialNumber, desc_serial, std::size(desc_serial));
-      // if (ret < 0)
-      // {
-      //   std::cout << "could not fetch serial number" << std::endl;
-      // }
-      // usb_serial = std::string((char *)desc_serial, ret).c_str();
-      // std::cout << "serial number: " << usb_serial << std::endl;
+
+      std::cout << "dev_handle: " << &dev_handle << std::endl;
       // libusb_close(dev_handle);
+      unsigned char desc_serial[26] = { 0 };
+      int ret = libusb_get_string_descriptor_ascii(dev_handle, desc.iSerialNumber, desc_serial, std::size(desc_serial));
+
     }
   }
-  // libusb_free_device_list(dev_list, 1);
+  // free device list
+  libusb_free_device_list(dev_list, 1);
+  dev_list = nullptr;
 
   if (libusb_kernel_driver_active(dev_handle, 0) == 1)
   {
@@ -65,6 +60,7 @@ int Mcu::init(std::string serial)
       std::cout << "kernel driver detatched" << std::endl;
     }
   }
+
   err = libusb_set_configuration(dev_handle, 1);
   if (err != 0)
   {

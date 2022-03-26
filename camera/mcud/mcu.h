@@ -15,7 +15,7 @@ class Mcu
     int init_usb_context(libusb_context **context);
     std::string usb_serial;
   public:
-    int init(std::string serial);
+    int init();
     
     // communications
     int usb_write(uint8_t bRequest, uint16_t wValue, uint16_t wIndex, unsigned int timeout);
