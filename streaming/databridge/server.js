@@ -14,10 +14,18 @@ const udpPort = 900
 const udpClient = dgram.createSocket("udp4")
 
 // setup websocket
+const clients = new Map();
 const wss = new WebSocket.Server({ server })
 
 wss.on("connection", (ws) => {
   console.log("new websocket connection")
+
+  ws.on("message", (msg) => {
+    console.log("ws msg: ", msg.toString())
+    udpClient.send(msg, udpPort, udpHost, (err) => {
+      console.log(err)
+    })
+  })
 })
 
 // host website
