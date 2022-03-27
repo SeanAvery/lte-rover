@@ -12,6 +12,7 @@ RUN apt install git-core \
       	libtool \
       	gengetopt \
       	wget \ 
+        curl \
         libmicrohttpd-dev -y
 
 # build libsrtp
