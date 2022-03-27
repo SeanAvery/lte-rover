@@ -35,5 +35,6 @@ RUN cd ${BUILD_SRC} \
 
 # run janus
 Add rtp-live.jcfg /rtp-live.jcfg
+ADD clean.sh /clean.sh
 Add run.sh /run.sh
 
