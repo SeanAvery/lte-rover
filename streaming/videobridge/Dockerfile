@@ -1,4 +1,6 @@
 FROM ubuntu:18.04
+
+# janus installation
 ARG BUILD_SRC="/janus"
 RUN apt update && apt-get upgrade -y
 RUN apt install git-core \
@@ -33,8 +35,11 @@ RUN cd ${BUILD_SRC} \
       	&& make \
       	&& make install
 
+# dev webserver
+
 # run janus
 Add rtp-live.jcfg /rtp-live.jcfg
 ADD clean.sh /clean.sh
+run chmod +x clean.sh
 Add run.sh /run.sh
 
