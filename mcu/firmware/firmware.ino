@@ -67,7 +67,7 @@ void loop() {
   if (Serial.available())
   {
     char serialMsg[7];
-    size_t msgLength = Serial.readBytesUntil(escapeIndex, serialMsg, 6);
+    size_t msgLength = Serial.readBytesUntil(escapeIndex, serialMsg, 20);
 
     if (msgLength == 6)
     {
@@ -83,6 +83,7 @@ void loop() {
       }
       else if (serialMsg[0] == steeringIndex)
       {
+        Serial.print("hit new steering");
         if (steering_safe(value))
         {
           angle = value;
@@ -93,32 +94,3 @@ void loop() {
   motorEsc.write(throttle);
   steeringServo.write(angle);
 }
-
-
-/* TESTS */
-
-// steering test loop
-
-//bool dir = true;
-//void loop() {
-//  delay(10);
-//  if (dir)
-//  {
-//    angle = angle + 1;
-//  }
-//  else
-//  {
-//    angle = angle - 1;
-//  }
-//
-//  if (steering_safe(angle)) 
-//  {
-////    Serial.print(angle);
-//    motorEsc.write(94);
-//    steeringServo.write(angle);
-//  }
-//  if (!steering_safe(angle))
-//  {
-//    dir = !dir;
-//  }
-//}
