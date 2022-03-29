@@ -83,7 +83,7 @@ void loop() {
       }
       else if (serialMsg[0] == steeringIndex)
       {
-        Serial.print("hit new steering");
+        Serial.println("hit new steering");
         if (steering_safe(value))
         {
           angle = value;

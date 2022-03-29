@@ -19,9 +19,7 @@ def scale_steering(value):
   return round(90 + (normal * 20))
 
 def scale_throttle(value):
-  print("value: ", value)
   normal = (2 * ((value - 0) / (256-0))) - 1
-  print(normal)
   return round(90 + (-normal * 20))
 
 def format_msg(prefix, value):
@@ -46,4 +44,7 @@ while True:
     ser.write(steering_msg)
     # send throttle
     ser.write(throttle_msg)
+    print(ser.readline())
+    
+   
 
