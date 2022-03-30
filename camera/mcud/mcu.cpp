@@ -6,6 +6,12 @@
 #include <mutex>
 #include <assert.h>
 
+#define ACM_CTRL_DTR   0x01
+#define ACM_CTRL_RTS   0x02
+
+static int ep_in_addr = 0x83;
+static int ep_out_addr = 0x02;
+
 int Mcu::init()
 {
   // init libusb
@@ -75,6 +81,23 @@ int Mcu::init()
   }
 
   // find device endpoints
+  
+  // CDC-ACM configuration
+  err = libusb_control_transfer(dev_handle, 0x21, 0x22, ACM_CTRL_DTR | ACM_CTRL_RTS, 0, NULL, 0, 0);
+  if (err < 0)
+  {
+    std::cout << "could not set line state " << libusb_error_name(err) << std::endl;
+  }
+
+  unsigned char encoding[] = { 0x80, 0x25, 0x00, 0x00, 0x00, 0x00, 0x08 };
+  
+  err = libusb_control_transfer(dev_handle, 0x21, 0x20, 0, 0, encoding, sizeof(encoding), 0);
+  if (err < 0)
+  {
+    std::cout << "could not set encoding" << std::endl;
+  }
+
+  
 
   return 0;
 }
@@ -89,7 +112,7 @@ int Mcu::init_usb_context(libusb_context **context)
      std::cout << "libusb initialization error" << std::endl;
      return err;
   }
-  libusb_set_debug(*context, 6);
+  // libusb_set_debug(*context, 6);
   return 0;
 }
 
