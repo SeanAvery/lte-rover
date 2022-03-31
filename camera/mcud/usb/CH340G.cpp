@@ -77,7 +77,17 @@ int CH340::setBaudRate()
       }
     }
   }
-
   return 0;
+}
 
+int CH340::handshake()
+{
+  int err;
+  err = libusb_control_transfer(dev_handle, CTRL_OUT, 0xa4, ~((dtr ? 1 << 5 : 0) | (rts ? 1 << 6 : 0)), 0, NULL, 0, 1000);
+
+  if (err < 0)
+  {
+    std::cout << "could not perform handshake " << err << std::endl;
+  }
+  return 0;
 }

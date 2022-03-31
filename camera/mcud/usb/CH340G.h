@@ -11,6 +11,9 @@
 #define CTRL_OUT          (LIBUSB_REQUEST_TYPE_VENDOR | LIBUSB_ENDPOINT_OUT)
 #define DEFAULT_BAUD_RATE 9600
 
+uint8_t dtr = 0;
+uint8_t rts = 0;
+
 class CH340
 {
   private:
@@ -20,4 +23,5 @@ class CH340
   public:
     int init();
     int setBaudRate();
+    int handshake();
 };
