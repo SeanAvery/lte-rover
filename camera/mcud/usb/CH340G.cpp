@@ -83,6 +83,32 @@ int CH340::setBaudRate()
 int CH340::handshake()
 {
   int err;
+  // 1
+  err = libusb_control_transfer(dev_handle, CTRL_OUT, 0xa1, 0, 0, NULL, 0, 1000);
+  if (err < 0)
+  {
+    std::cout << "handshake step 1 failed" << std::endl;
+    return err;
+  }
+  
+  // 2
+  err = libusb_control_transfer(dev_handle, CTRL_OUT, 0x9a, 0x2518, 0x0050, NULL, 0, 1000);
+  if (err < 0)
+  {
+    std::cout << "handshake step 2 failed" << std::endl;
+    return err;
+  }
+
+  // 3
+  err = libusb_control_transfer(dev_handle, CTRL_OUT, 0xa1, 0x501f, 0xd90a, NULL, 0, 1000);
+  if (err < 0)
+  {
+    std::cout << "handshake step 3 failed" << std::endl;
+    return err;
+  }
+
+
+  // 4  
   err = libusb_control_transfer(dev_handle, CTRL_OUT, 0xa4, ~((dtr ? 1 << 5 : 0) | (rts ? 1 << 6 : 0)), 0, NULL, 0, 1000);
 
   if (err < 0)
