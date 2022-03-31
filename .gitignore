@@ -2,4 +2,7 @@ camera/camera
 **/*.swp
 **/*.swo
 **/*.swn
+**/*.swl
+**/*.swm
+**/node_modules/**
 
