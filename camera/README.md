@@ -18,7 +18,7 @@ make build-mcud
 ```
 
 ### controllerd
-1. Daemon udp server receives packets from video bridge
+1. Daemon udp server receives packets from data-bridge
 2. Publishes `controls` packets over zmq
 
 ```
@@ -30,9 +30,31 @@ make build-controllerd
 
 ```
 may just run straight op for this one
+
+./camerad # from openpilot build
 ```
+
+### streamerd
+1. Accepts frame packets over VisionIPC
+2. Encodes to h64 using OpenMax
+3. Streams over RTP to video-bridge
+
+```
+make build-streamerd
+./streamer
+```
+
 
 ## Communication
 
+### Wireless
+
+Linux socket. Udp on wifi for now. 
+
+Todo: tcp over lte
+
+### Interprocess
+
 checkout out openpilot's cereal library
+
 
