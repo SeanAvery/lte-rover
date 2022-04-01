@@ -24,6 +24,7 @@ class CH340
 
   public:
     int init();
+    int init_ch340();
     int set_baud_rate();
     int handshake();
     int bulk_write();
