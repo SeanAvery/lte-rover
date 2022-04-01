@@ -37,17 +37,25 @@ int CH340::init()
     if (desc.idVendor == VENDOR && desc.idProduct == PRODUCT)
     {
       std::cout << "found mcu usb connection. device: " << i << std::endl;
-      libusb_open(dev_list[i], &dev_handle);
+      // libusb_open(dev_list[i], &dev_handle);
+      dev_handle = libusb_open_device_with_vid_pid(NULL, VENDOR, PRODUCT);
       if (dev_handle == NULL)
       {
         return 1;
       }
     }
   }
+
+  // claim interface
+  err = libusb_claim_interface(dev_handle, 0);
+  if (err < 0)
+  {
+    std::cout << "could not claim interface: " << err << std::endl;
+  }
   return 0;
 }
 
-int CH340::setBaudRate()
+int CH340::set_baud_rate()
 {
 
   // TODO: check if dev handle is defined
@@ -60,8 +68,10 @@ int CH340::setBaudRate()
   {
     if (baud[i * 3] == BAUDRATE)
     {
-      std::cout << "hit it" << std::endl;
+      std::cout << "setting baudrate : " << baud[i * 3 + 1] << std::endl;
       err = libusb_control_transfer(dev_handle, CTRL_OUT, 0x9a, 0x1312, baud[i * 3 + 1], NULL, 0, 1000);
+
+      // err = libusb_control_transfer(dev_handle, CTRL_OUT, 0x9a, 0x1312, br, NULL, 0, 1000);
 
       if (err < 0)
       {
@@ -70,6 +80,8 @@ int CH340::setBaudRate()
       }
 
       err = libusb_control_transfer(dev_handle, CTRL_OUT, 0x9a, 0x0f2c, baud[i * 3 + 2], NULL, 0, 1000);
+
+      // err = libusb_control_transfer(dev_handle, CTRL_OUT, 0x9a, 0x0f2c, br, NULL, 0, 1000);
       if (err < 0)
       {
         std::cout << "could not set baudrate step 2 " << err << std::endl;
@@ -107,7 +119,6 @@ int CH340::handshake()
     return err;
   }
 
-
   // 4  
   err = libusb_control_transfer(dev_handle, CTRL_OUT, 0xa4, ~((dtr ? 1 << 5 : 0) | (rts ? 1 << 6 : 0)), 0, NULL, 0, 1000);
 
@@ -117,3 +128,35 @@ int CH340::handshake()
   }
   return 0;
 }
+
+int CH340::bulk_read(unsigned char endpoint, unsigned char* data, int length, unsigned int timeout)
+{
+  int err;
+  int transferred = 0;
+  err = libusb_bulk_transfer(dev_handle, endpoint, data, length, &transferred, timeout);
+  if (err < 0)
+  {
+    std::cout << "could not bulk read" << err << std::endl;
+    return err;
+  }
+  std::cout << "bytes transfered: " << transferred << std::endl;
+  return 0;
+}
+
+int CH340::bulk_write(unsigned char endpoint, unsigned char* data, int length, unsigned int timeout)
+{
+
+  int transferred = 0;
+  int err = libusb_bulk_transfer(dev_handle, endpoint, data, length, &transferred, timeout);
+  if (err < 0)
+  {
+    std::cout << "could not bulk write : " << err << std::endl;
+  }
+  return 0;
+}
+
+int async_bulk_read(unsigned char endpoint, unsigned char* data, int length, unsigned int timeout)
+{
+  return 0;
+}
+

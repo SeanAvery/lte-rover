@@ -4,6 +4,7 @@
 #define VENDOR 6790
 #define PRODUCT 29987
 #define BAUDRATE 9600
+// #define BAUDRATE 115200
 
 #define EP_DATA_IN        (0x2|LIBUSB_ENDPOINT_IN)
 #define EP_DATA_OUT       (0x2|LIBUSB_ENDPOINT_OUT)
@@ -19,9 +20,14 @@ class CH340
   private:
     libusb_context *ctx = NULL;
     libusb_device_handle *dev_handle = NULL;
+    libusb_transfer *recv_bulk_transfer = NULL;
 
   public:
     int init();
-    int setBaudRate();
+    int set_baud_rate();
     int handshake();
+    int bulk_write();
+    int bulk_read(unsigned char endpoint, unsigned char* data, int length, unsigned int timeout);
+    int bulk_write(unsigned char endpoint, unsigned char* data, int length, unsigned int timeout);
+    int async_bulk_read(unsigned char endpoint, unsigned char* data, int length, unsigned int timeout);
 };
