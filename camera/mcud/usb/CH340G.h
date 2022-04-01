@@ -29,6 +29,8 @@ class CH340
     int handshake();
     int bulk_write();
     int bulk_read(unsigned char endpoint, unsigned char* data, int length, unsigned int timeout);
-    int bulk_write(unsigned char endpoint, unsigned char* data, int length, unsigned int timeout);
     int async_bulk_read(unsigned char endpoint, unsigned char* data, int length, unsigned int timeout);
+    int bulk_write(unsigned char endpoint, unsigned char* data, int length, unsigned int timeout);
+
+  int usb_write(uint8_t bRequest, uint16_t wValue, uint16_t wIndex, unsigned int timeout);
 };

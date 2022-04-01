@@ -165,3 +165,19 @@ int async_bulk_read(unsigned char endpoint, unsigned char* data, int length, uns
   return 0;
 }
 
+
+int CH340::usb_write(uint8_t bRequest, uint16_t wValue, uint16_t wIndex, unsigned int timeout)
+{
+  int err;
+  const uint8_t bmRequestType = LIBUSB_ENDPOINT_OUT | LIBUSB_REQUEST_TYPE_VENDOR | LIBUSB_RECIPIENT_DEVICE;
+
+  err = libusb_control_transfer(dev_handle, bmRequestType, bRequest, wValue, wIndex, NULL, 0, timeout);
+
+  if (err < 0)
+  {
+    std::cout << "could not write: " << err << std::endl;
+    return err;
+  }
+
+  return 0;
+}
