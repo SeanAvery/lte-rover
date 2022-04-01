@@ -11,17 +11,17 @@ def format_msg(prefix, value):
 min_steering = 70
 max_steering = 110
 def test_steering():
-  steering_val = 90
-  for x in range(5):
+  steering_val = 70
+  for x in range(1):
     while steering_val < max_steering:
-      time.sleep(0.05)
-      steering_val = steering_val + 1
+      time.sleep(1)
+      steering_val = steering_val + 10
       msg = format_msg("s", steering_val)
       print(msg)
       pm.send('controls', msg)
     while steering_val > min_steering:
-      time.sleep(0.05)
-      steering_val = steering_val - 1
+      time.sleep(1)
+      steering_val = steering_val - 10
       msg = format_msg("s", steering_val)
       print(msg)
       pm.send('controls', msg)

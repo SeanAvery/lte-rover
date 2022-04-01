@@ -6,6 +6,12 @@
 
 #define TIMEOUT 0
 
+#define EP_DATA_IN        (0x2|LIBUSB_ENDPOINT_IN)
+#define EP_DATA_OUT       (0x2|LIBUSB_ENDPOINT_OUT)
+#define CTRL_IN           (LIBUSB_REQUEST_TYPE_VENDOR | LIBUSB_ENDPOINT_IN)
+#define CTRL_OUT          (LIBUSB_REQUEST_TYPE_VENDOR | LIBUSB_ENDPOINT_OUT)
+#define DEFAULT_BAUD_RATE 9600
+
 class Mcu
 {
   private:

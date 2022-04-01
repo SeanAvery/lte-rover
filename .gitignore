@@ -4,5 +4,6 @@ camera/camera
 **/*.swn
 **/*.swl
 **/*.swm
+**/*.sw*
 **/node_modules/**
 

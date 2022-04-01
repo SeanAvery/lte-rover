@@ -144,8 +144,7 @@ int CH340::bulk_read(unsigned char endpoint, unsigned char* data, int length, un
     std::cout << "could not bulk read" << err << std::endl;
     return err;
   }
-  std::cout << "bytes transfered: " << transferred << std::endl;
-  return 0;
+  return transferred;
 }
 
 int CH340::bulk_write(unsigned char endpoint, unsigned char* data, int length, unsigned int timeout)
@@ -180,4 +179,21 @@ int CH340::usb_write(uint8_t bRequest, uint16_t wValue, uint16_t wIndex, unsigne
   }
 
   return 0;
+}
+
+int CH340::usb_read(uint8_t bRequest, uint16_t wValue, uint16_t wIndex, unsigned char *data, uint16_t wLength, unsigned int timeout)
+{
+  const uint8_t bmRequestType = LIBUSB_ENDPOINT_IN | LIBUSB_REQUEST_TYPE_VENDOR | LIBUSB_RECIPIENT_DEVICE;
+  
+  int err;
+  do {
+    err = libusb_control_transfer(dev_handle, bmRequestType, bRequest, wValue, wIndex, data, wLength, timeout);
+    // if (err < 0) handle_usb_issue(err, __func__);
+    if (err < 0)
+    {
+      std::cout << "usb_read error: " << err << std::endl;
+    }
+  } while (err < 0);
+
+  return err;
 }

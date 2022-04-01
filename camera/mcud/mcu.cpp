@@ -6,14 +6,11 @@
 #include <mutex>
 #include <assert.h>
 
-#define ACM_CTRL_DTR   0x01
-#define ACM_CTRL_RTS   0x02
-
-static int ep_in_addr = 0x83;
-static int ep_out_addr = 0x02;
 
 int Mcu::init()
 {
+  std::cout << libusb_error_name(-9) << std::endl;
+  exit(0);
   // init libusb
   std::cout << "initializing usb connection" << std::endl;
   ssize_t num_devices;
@@ -47,7 +44,6 @@ int Mcu::init()
         return 1;
       }
 
-      std::cout << "dev_handle: " << &dev_handle << std::endl;
       // libusb_close(dev_handle);
       unsigned char desc_serial[26] = { 0 };
       int ret = libusb_get_string_descriptor_ascii(dev_handle, desc.iSerialNumber, desc_serial, std::size(desc_serial));
@@ -82,22 +78,8 @@ int Mcu::init()
 
   // find device endpoints
   
-  // CDC-ACM configuration
-  err = libusb_control_transfer(dev_handle, 0x21, 0x22, ACM_CTRL_DTR | ACM_CTRL_RTS, 0, NULL, 0, 0);
-  if (err < 0)
-  {
-    std::cout << "could not set line state " << libusb_error_name(err) << std::endl;
-  }
-
-  unsigned char encoding[] = { 0x80, 0x25, 0x00, 0x00, 0x00, 0x00, 0x08 };
-  
-  err = libusb_control_transfer(dev_handle, 0x21, 0x20, 0, 0, encoding, sizeof(encoding), 0);
-  if (err < 0)
-  {
-    std::cout << "could not set encoding" << std::endl;
-  }
-
-  
+  // set baudrate
+  // err = libusb_control_transfer(dev_handle, FTDI_DEVICE_OUT_REQTYPE, 3, 
 
   return 0;
 }
@@ -129,8 +111,17 @@ int Mcu::usb_read(uint8_t bRequest, uint16_t wValue, uint16_t wIndex, unsigned c
   while (err < 0);
 }
 
-int usb_write(uint8_t bRequest, uint16_t wValue, uint16_t wIndex, unsigned int timeout)
+int Mcu::usb_write(uint8_t bRequest, uint16_t wValue, uint16_t wIndex, unsigned int timeout)
 {
+  const uint8_t bmRequestType = LIBUSB_ENDPOINT_OUT | LIBUSB_REQUEST_TYPE_VENDOR | LIBUSB_RECIPIENT_DEVICE;
+
+  int err;
+
+  err = libusb_control_transfer(dev_handle, bmRequestType, bRequest, wValue, wIndex, NULL, 0, timeout);
+  if (err < 0)
+  {
+    std::cout << "usb_write error: " << libusb_error_name(err) << std::endl;
+  }
   return 0;
 }
 
