@@ -35,11 +35,11 @@ RUN cd ${BUILD_SRC} \
       	&& make \
       	&& make install
 
-# dev webserver
-
 # run janus
 Add rtp-live.jcfg /rtp-live.jcfg
 ADD clean.sh /clean.sh
-run chmod +x clean.sh
+run chmod +x /clean.sh
 Add run.sh /run.sh
+run chmod +x /run.sh
 
+CMD /clean.sh && /run.sh
