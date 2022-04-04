@@ -1,5 +1,7 @@
 FROM ubuntu:18.04
 
+ARG LEVEL="devel"
+
 # janus installation
 ARG BUILD_SRC="/janus"
 RUN apt update && apt-get upgrade -y
@@ -35,6 +37,12 @@ RUN cd ${BUILD_SRC} \
       	&& make \
       	&& make install
 
+# dev installs
+
+# RUN apt update && \
+	# apt install ffmpeg \
+	# vim  -y
+
 # run janus
 Add rtp-live.jcfg /rtp-live.jcfg
 ADD clean.sh /clean.sh
@@ -42,4 +50,5 @@ run chmod +x /clean.sh
 Add run.sh /run.sh
 run chmod +x /run.sh
 
-CMD /clean.sh && /run.sh
+# CMD /clean.sh && /run.sh
+
