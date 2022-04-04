@@ -6,4 +6,5 @@ camera/camera
 **/*.swm
 **/*.sw*
 **/node_modules/**
+**/*video.sdp*
 
