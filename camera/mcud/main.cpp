@@ -1,4 +1,5 @@
 #include <iostream>
+#include <sstream>
 #include <unistd.h>
 #include <memory>
 #include "usb/CH340G.cpp"
@@ -6,17 +7,21 @@
 
 int send(CH340 mcu, std::string msg)
 {
-
-  int len = msg.length();
-  const char *dat = msg.data();
-  unsigned char a[0x20+1];
-  a[0] = 1;
-  for (int i=0; i<len; i+=0x20)
-  {
-    int ll = std::min(0x20, len-i);
-    memcpy(&a[1], &dat[i], ll);
-    mcu.bulk_write(2, a, ll+1, 100);
-  }
+  unsigned char *packet = (unsigned char *)msg.c_str();
+  // strcpy(msg.c_str(), packet);
+  mcu.bulk_write(EP_DATA_OUT, packet, sizeof(packet), 100);
+  // int len = msg.length();
+  // std::cout << "msg length: " << len << std::endl;
+  // const char *dat = msg.data();
+  // unsigned char a[0x20+1];
+  // a[0] = 1;
+  // for (int i=1; i<len; i+=0x20)
+  // {
+  //   int ll = std::min(0x20, len-i);
+  //   memcpy(&a[1], &dat[i], ll);
+  //   std::cout << "attempting bulk write: " << a << " , " << ll+1 << std::endl;
+  //   mcu.bulk_write(EP_DATA_OUT, a, sizeof(a), 100);
+  // }
   return 0;
 }
 
@@ -34,6 +39,19 @@ std::string receive(CH340 &mcu)
   return r;
 }
 
+std::string format_msg(int val)
+{
+  std::stringstream ss;
+  ss << "s000" << val << "#";
+  // std::string test = "hello";
+  // auto msg = std::format("s000{}#", val);
+  // std::cout << "msg: " << msg << std::endl;
+  return ss.str();
+}
+
+const int min_steering = 70;
+const int max_steering = 110;
+
 int main()
 {
   int err;
@@ -43,21 +61,32 @@ int main()
   err = mcu.init_ch340();
   err = mcu.set_baud_rate();
   err = mcu.handshake();
+
   // err = mcu.set_baud_rate();
   // std::string retmsg = receive(mcu);
   // std::cout << "return msg: " << retmsg << std::endl;
   // send(mcu, "s00110#");
 
+  auto msg1 = format_msg(70);
+  std::cout << "msg1: " << msg1 << std::endl;
+  send(mcu, msg1);
+  exit(0);
+
   // test write
   std::cout << "write endpoint: " << EP_DATA_OUT << std::endl;
-  unsigned char test_msg[]  = "s00090#";
+  unsigned char test_msg[]  = "s00070#";
   err = mcu.bulk_write(EP_DATA_OUT, test_msg, sizeof(test_msg), 1000);
   exit(0);
-  // test write
+  // std::string test_msg = "s00070#";
+  // send(mcu, test_msg);
+
+  exit(0);
+
+  // test read
+  std::cout << "read endpoint:" << EP_DATA_IN << std::endl;
   unsigned char ret_msg[1024];
   // read endpoint 130
   // 131
-  std::cout << "read endpoint:" << EP_DATA_IN << std::endl;
   std::cout << "control endpoint" << CTRL_IN << std::endl;
   err = mcu.bulk_read(EP_DATA_IN, ret_msg, 1024, 1000);
   std::cout << "return message: " << ret_msg << std::endl;
