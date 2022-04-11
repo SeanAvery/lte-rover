@@ -33,7 +33,6 @@ void setup() {
   // setup pwm pins for steering and motor control
   steeringServo.attach(6);
   motorEsc.attach(5);
-  Serial.println("motor esc attatched");
 }
 
 bool steering_safe(int value)
@@ -63,7 +62,7 @@ bool throttle_safe(int value)
 }
 
 void loop() {
-  delay(10);
+  delay(1);
   if (Serial.available())
   {
     char serialMsg[7];
@@ -83,7 +82,6 @@ void loop() {
       }
       else if (serialMsg[0] == steeringIndex)
       {
-        Serial.println("hit new steering");
         if (steering_safe(value))
         {
           angle = value;
@@ -91,6 +89,7 @@ void loop() {
       }
     }
   }
+  Serial.println("#"); // heartbeat
   motorEsc.write(throttle);
   steeringServo.write(angle);
 }
