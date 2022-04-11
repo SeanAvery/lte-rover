@@ -8,8 +8,10 @@
 
 
 #define UDP_PORT 900
-#define UDP_HOST "192.168.1.9"
+#define UDP_HOST "192.168.1.5"
 #define BUF_MAX 1024
+
+#define CONTROLLERD_FREQUENCY 10000 // 100 hz
 
 int main()
 {
@@ -40,14 +42,13 @@ int main()
   // dummy message
   char msg[] = "s00070#";
 
-
   // init data container
   char buffer[BUF_MAX];
   socklen_t len = sizeof(client);
 
-  while (true)
+  while (1)
   {
-    usleep(100000);
+    usleep(CONTROLLERD_FREQUENCY);
     // check socket for msg
     std::cout << "checking socket" << std::endl;
     ssize_t n = recvfrom(sockfd, (char *)buffer, BUF_MAX, MSG_WAITALL, (struct sockaddr *) &client, &len);
