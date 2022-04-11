@@ -5,6 +5,8 @@
 #include "usb/CH340G.cpp"
 #include "messaging/messaging.h"
 
+#define MCUD_FREQUENCY 10000 // 100 hertz
+
 int send(CH340 mcu, std::string msg)
 {
   unsigned char *packet = (unsigned char *)msg.c_str();
@@ -57,8 +59,7 @@ int main()
   // poll sub socket
   while(true)
   {
-    // dev handle 2
-    usleep(100);
+    usleep(MCUD_FREQUENCY);
     // receive msg from subsocket
     Message *controller_msg = subscriber->receive();
 
