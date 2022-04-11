@@ -35,10 +35,12 @@ const gameLoop = () => {
   if (gamepad) {
     const decelerate = gamepad.buttons[6].value
     if (decelerate > 0) {
+      throttle = throttle - decelerate
       console.log("decelerate: ", decelerate)
     }
     const accelerate = gamepad.buttons[7].value
     if (accelerate > 0) {
+      throttle = throttle + accelerate
       console.log("accelerate: ", accelerate)
     }
 
@@ -46,7 +48,7 @@ const gameLoop = () => {
     console.log('axis', gamepad.axes)
     steering = Math.round(90 + gamepad.axes[0]*20)
     
-    console.log("steering: ", steering)
+    // console.log("steering: ", steering)
 
     // format msg
     let steeringMsg = "000" + steering
@@ -54,7 +56,13 @@ const gameLoop = () => {
     steeringMsg = "s" + steeringMsg + "#"
     console.log("steeringMsg", steeringMsg)
     ws.send(steeringMsg)
-    
+
+    console.log("throttle:", throttle)
+    let throttleMsg = "000" + Math.round(throttle)
+    throttleMsg = throttleMsg.substr(throttleMsg.length - 5, throttleMsg.length)
+    throttleMsg = "t" + throttleMsg + "#"
+    console.log("throttleMsg:", throttleMsg)
+
   }
 }
 
