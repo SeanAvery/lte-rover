@@ -62,6 +62,7 @@ const gameLoop = () => {
     throttleMsg = throttleMsg.substr(throttleMsg.length - 5, throttleMsg.length)
     throttleMsg = "t" + throttleMsg + "#"
     console.log("throttleMsg:", throttleMsg)
+    ws.send(throttleMsg)
 
   }
 }
