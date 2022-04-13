@@ -15,7 +15,6 @@ const float minVoltage = 3.43; // 1S cut-off Li-Po battery
 #define receiverChannel1 2 // Your interface here
 
 // Global Variables
-int pos = 0; 
 float voltage = 0;
 
 // Prototypes
