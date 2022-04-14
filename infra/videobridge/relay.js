@@ -7,6 +7,14 @@ const path = require("path")
 const app = express()
 const server = http.createServer(app)
 
+// set up websocket
+const wss = new WebSocket.Server({ server })
+let client
+wss.on("connection", (ws) => {
+  console.log("new websocket connection")
+  client = ws
+})
+
 // host website
 app.use(express.static("static"))
 app.get("/", (req, res) => {
