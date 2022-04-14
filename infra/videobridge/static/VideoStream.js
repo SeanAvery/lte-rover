@@ -6,8 +6,12 @@ ws.onopen = () => {
   console.log("websocket connected")
 }
 
+ws.onmessage = (evt) => {
+  console.log("received msg")
+}
 
 // render loop
+let frame
 const render = () => {
   console.log("render")
 }
