@@ -5,6 +5,7 @@ typedef struct SubDevices {
   int csiphy_fd;
   int isp_fd;
   int sensor_fd;
+  int sensor_init_fd;
 } SubDevices;
 
 typedef struct CameraState {
