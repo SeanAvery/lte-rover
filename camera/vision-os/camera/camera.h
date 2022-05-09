@@ -1,0 +1,15 @@
+#include <fstream>
+
+typedef struct SubDevices {
+  int csid_fd;
+  int csiphy_fd;
+  int isp_fd;
+  int sensor_fd;
+} SubDevices;
+
+typedef struct CameraState {
+  int type;
+  int fps;
+  SubDevices subdevices;
+} CameraState;
+
