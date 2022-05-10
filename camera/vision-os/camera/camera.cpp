@@ -36,8 +36,28 @@ static int camera_init() {
 
 // open
 
+static int camera_shutdown(struct CameraState *camera) {
+  int err = 0;
+
+  struct msm_camera_csi_lane_params csi_lane_params = { 0 };
+  csi_lane_params.csi_lane_mask = 0x1f;
+  csiphy_cfg_data csiphy_cfg = { .cfg.csi_lane_params = &csi_lane_params, .cfgtype = CSIPHY_RELEASE };
+  err = cam_ioctl(camera->subdevices.csiphy_fd, VIDIOC_MSM_CSIPHY_IO_CFG, &csiphy_cfg, "release csiphy");
+
+  struct csid_cfg_data csid_cfg = {};
+  csid_cfg.cfgtype = CSID_RELEASE;
+  err = cam_ioctl(camera->subdevices.csid_fd, VIDIOC_MSM_CSID_IO_CFG, &csid_cfg, "release csid");
+
+  struct sensorb_cfg_data sensorb_cfg = { .cfgtype = CFG_POWER_DOWN };
+  cam_ioctl(camera->subdevices.sensor_fd, VIDIOC_MSM_SENSOR_CFG, &sensorb_cfg, "sensor power down");
+
+  return err;
+}
+
 static int camera_open(struct CameraState *camera) {
   int err = 0;
+
+  // connect to v4l subsystem files (IMX298)
   camera->subdevices.sensor_init_fd = open("/dev/v4l-subdev11", O_RDWR | O_NONBLOCK);
   assert(camera->subdevices.sensor_init_fd > 0);
   camera->subdevices.sensor_fd = open("/dev/v4l-subdev17", O_RDWR | O_NONBLOCK);
@@ -48,8 +68,13 @@ static int camera_open(struct CameraState *camera) {
   assert(camera->subdevices.csiphy_fd > 0);
   camera->subdevices.isp_fd = open("/dev/v4l-subdev13", O_RDWR | O_NONBLOCK);
   assert(camera->subdevices.isp_fd > 0);
+
+  camera_shutdown(camera);
+
   return err;
 }
+
+
 
 // start
 
