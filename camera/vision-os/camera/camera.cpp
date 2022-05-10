@@ -5,10 +5,8 @@
 
 #include "camera.h"
 #include "common.h"
-#include "include/msm_cam_sensor.h"
-#include "include/sensor_i2c.h"
 
-// tools
+// TOOLS
 
 int sensor_write_regs(CameraState *s, struct msm_camera_i2c_reg_array *arr, size_t size, msm_camera_i2c_data_type data_type) {
   int err = 0;
@@ -25,7 +23,7 @@ int sensor_write_regs(CameraState *s, struct msm_camera_i2c_reg_array *arr, size
   return err;
 }
 
-// control
+// CONTROL
 
 // init
 
@@ -69,6 +67,13 @@ static int camera_up(struct CameraState *camera) {
 
   err = sensor_write_regs(camera, mode_setting_array_imx298, std::size(mode_setting_array_imx298), MSM_CAMERA_I2C_BYTE_DATA);
 
+  csid_params.lut_params.vc_cfg[0] = &csid_params.lut_params.vc_cfg_a[0];
+  csid_params.lut_params.vc_cfg[1] = &csid_params.lut_params.vc_cfg_a[1];
+  csid_params.lut_params.vc_cfg[2] = &csid_params.lut_params.vc_cfg_a[2];
+  csid_cfg.cfgtype = CSID_CFG;
+  csid_cfg.cfg.csid_params = &csid_params;
+  cam_ioctl(camera->subdevices.csid_fd, VIDIOC_MSM_CSID_IO_CFG, &csid_cfg, "csid configure");
+
   return err;
 }
 
@@ -93,8 +98,6 @@ static int camera_open(struct CameraState *camera) {
   return err;
 }
 
-
-
 // start
 
 static int camera_start(struct CameraState *camera) {
@@ -103,7 +106,8 @@ static int camera_start(struct CameraState *camera) {
   return err;
 }
 
-// test
+// TEST
+
 int main() {
   int err = 0;
   std::cout << "starting camera capture" << std::endl;
