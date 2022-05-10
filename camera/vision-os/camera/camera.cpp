@@ -1,11 +1,12 @@
 #include <iostream>
+
+#include "linux/videodev2.h"
+#include "assert.h"
+
 #include "camera.h"
 #include "common.h"
 #include "include/msm_cam_sensor.h"
 #include "include/sensor_i2c.h"
-
-// trys
-#include "linux/videodev2.h"
 
 // tools
 
@@ -26,17 +27,31 @@ int sensor_write_regs(CameraState *s, struct msm_camera_i2c_reg_array *arr, size
 
 // control
 
+// init
+
 static int camera_init() {
   int err = 0;
   return err;
 }
 
+// open
+
 static int camera_open(struct CameraState *camera) {
   int err = 0;
   camera->subdevices.sensor_init_fd = open("/dev/v4l-subdev11", O_RDWR | O_NONBLOCK);
+  assert(camera->subdevices.sensor_init_fd > 0);
   camera->subdevices.sensor_fd = open("/dev/v4l-subdev17", O_RDWR | O_NONBLOCK);
+  assert(camera->subdevices.sensor_fd > 0);
+  camera->subdevices.csid_fd = open("/dev/v4l-subdev3", O_RDWR | O_NONBLOCK);
+  assert(camera->subdevices.csid_fd > 0);
+  camera->subdevices.csiphy_fd = open("/dev/v4l-subdev0", O_RDWR | O_NONBLOCK);
+  assert(camera->subdevices.csiphy_fd > 0);
+  camera->subdevices.isp_fd = open("/dev/v4l-subdev13", O_RDWR | O_NONBLOCK);
+  assert(camera->subdevices.isp_fd > 0);
   return err;
 }
+
+// start
 
 static int camera_start(struct CameraState *camera) {
   int err = 0;
@@ -52,8 +67,5 @@ int main() {
   // init
   // open
   err = camera_open(&camera);
-  err = camera_start(&camera);
-  std::cout << "start camera call: " << err << std::endl;
-
-  std::cout << camera.subdevices.sensor_fd << std::endl;
+  // err = camera_start(&camera);
 }

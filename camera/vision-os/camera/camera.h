@@ -11,6 +11,7 @@ typedef struct SubDevices {
 typedef struct CameraState {
   int type;
   int fps;
+  bool on;
   SubDevices subdevices;
 } CameraState;
 
