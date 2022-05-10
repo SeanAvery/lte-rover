@@ -2,6 +2,7 @@
 
 #include "include/msm_cam_sensor.h"
 #include "include/sensor_i2c.h"
+#include "include/msmb_isp.h"
 
 typedef struct SubDevices {
   int csid_fd;

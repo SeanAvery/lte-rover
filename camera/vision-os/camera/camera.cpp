@@ -77,6 +77,13 @@ static int camera_up(struct CameraState *camera) {
   return err;
 }
 
+static int camera_configure_stream(struct CameraState *camera) {
+  int err = 0;
+  msm_vfe_smmu_attach_cmd smmu_cmd = { .security_mode = 0, .iommu_attach_mode = IOMMU_ATTACH };
+  err = cam_ioctl(camera->subdevices.isp_fd, VIDIOC_MSM_ISP_SMMU_ATTACH, &smmu_cmd, "isp smmu attach");
+  return err;
+}
+
 static int camera_open(struct CameraState *camera) {
   int err = 0;
 
@@ -94,6 +101,7 @@ static int camera_open(struct CameraState *camera) {
 
   camera_shutdown(camera);
   camera_up(camera);
+  camera_configure_stream(camera);
 
   return err;
 }
