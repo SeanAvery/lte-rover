@@ -16,6 +16,10 @@ static int cam_ioctl(int fd, unsigned long int request, void *arg, const char *l
   int err = HANDLE_EINTR(ioctl(fd, request, arg));
   if (err != 0 && log_msg) {
     // LOG(util::string_format("%s: %d", log_msg, err).c_str());
+    std::cout << "errno: " << errno << std::endl;
   }
   return err;
 }
+
+// static int ioctl_err()
+
