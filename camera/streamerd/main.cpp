@@ -4,8 +4,12 @@
 #include "encoder/omx_encoder.cpp"
 #include "visionipc/visionipc.h"
 #include "visionipc/visionipc_client.h"
-
 // #include <gst/gst.h>
+
+void encoder_thread()
+{
+  // VisionIpcClient vipc_client = VisionIpcClient("camerad", VISION_STREAM_RGB_WIDE, false);
+}
 
 int main()
 {
@@ -15,6 +19,8 @@ int main()
   auto encoder = new OmxEncoder();
   const char* path = "/tmp/rtp_bridge";
   encoder->encoder_open(path);
+
+  // encoder_thread();
   // camera stream subscriber
   Context *context = Context::create();
   SubSocket *subscriber = SubSocket::create(context, "roadCameraState");
@@ -28,7 +34,9 @@ int main()
 
     auto data = msg->getData();
 
-    std::cout << "data: " << sizeof(data) << std::endl;
+    std::cout << "data: " << msg->getSize() << std::endl;
+
+    // parse image buffer
   }
   std::cout << "yoooo" << std::endl;
 }
