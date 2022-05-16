@@ -1,6 +1,7 @@
 #include <iostream>
 
 #include "linux/videodev2.h"
+#include "unistd.h"
 #include "assert.h"
 
 #include "camera.h"
@@ -84,20 +85,36 @@ static int camera_configure_stream(struct CameraState *camera) {
   return err;
 }
 
+static void sensors_init(struct CameraState *camera) {
+  cam_info.power_setting_array.power_setting = &cam_info.power_setting_array.power_setting_a[0];
+  cam_info.power_setting_array.power_down_setting = &cam_info.power_setting_array.power_down_setting_a[0];
+  sensor_init_cfg_data sensor_init_cfg = {.cfgtype = CFG_SINIT_PROBE, .cfg.setting = &cam_info};
+  int err = cam_ioctl(camera->subdevices.sensor_init_fd, VIDIOC_MSM_SENSOR_INIT_CFG, &sensor_init_cfg, "sensor init cfg");
+  // allow time for sensor to init
+  for (int i = 0; i < 10; i++) {
+    camera->subdevices.sensor_fd = open("/dev/v4l-subdev17", O_RDWR | O_NONBLOCK);
+    if (camera->subdevices.sensor_fd > 0) break;
+    std::cout << "waiting for sensor susbsytem init" << std::endl;
+    usleep(1000000); // sleep for 1 second
+  }
+}
+
 static int camera_open(struct CameraState *camera) {
   int err = 0;
 
   // connect to v4l subsystem files (IMX298)
   camera->subdevices.sensor_init_fd = open("/dev/v4l-subdev11", O_RDWR | O_NONBLOCK);
   assert(camera->subdevices.sensor_init_fd > 0);
-  camera->subdevices.sensor_fd = open("/dev/v4l-subdev17", O_RDWR | O_NONBLOCK);
-  assert(camera->subdevices.sensor_fd > 0);
   camera->subdevices.csid_fd = open("/dev/v4l-subdev3", O_RDWR | O_NONBLOCK);
   assert(camera->subdevices.csid_fd > 0);
   camera->subdevices.csiphy_fd = open("/dev/v4l-subdev0", O_RDWR | O_NONBLOCK);
   assert(camera->subdevices.csiphy_fd > 0);
   camera->subdevices.isp_fd = open("/dev/v4l-subdev13", O_RDWR | O_NONBLOCK);
   assert(camera->subdevices.isp_fd > 0);
+
+  sensors_init(camera);
+
+  assert(camera->subdevices.sensor_fd > 0);
 
   camera_shutdown(camera);
   camera_up(camera);
