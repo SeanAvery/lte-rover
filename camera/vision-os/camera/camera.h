@@ -3,12 +3,14 @@
 #include "include/msm_cam_sensor.h"
 #include "include/sensor_i2c.h"
 #include "include/msmb_isp.h"
+#include "include/msmb_ispif.h"
 // #include "visionipc/visionbuf.h"
 
 typedef struct SubDevices {
   int csid_fd;
   int csiphy_fd;
   int isp_fd;
+  int ispif_fd;
   int sensor_fd;
   int sensor_init_fd;
 } SubDevices;
@@ -73,5 +75,10 @@ struct msm_camera_csid_params csid_params = {
   },
 };
 
-
+struct msm_ispif_param_data ispif_params = {
+  .num = 1,
+  .entries = {
+    {.vfe_intf = VFE0, .intftype = RDI0, .num_cids = 1, .cids[0] = CID0, .csid = CSID0},
+  },
+};
 

@@ -103,6 +103,8 @@ static int camera_open(struct CameraState *camera) {
   int err = 0;
 
   // connect to v4l subsystem files (IMX298)
+  camera->subdevices.ispif_fd = open("/dev/v4l-subdev15", O_RDWR | O_NONBLOCK);
+
   camera->subdevices.sensor_init_fd = open("/dev/v4l-subdev11", O_RDWR | O_NONBLOCK);
   assert(camera->subdevices.sensor_init_fd > 0);
   camera->subdevices.csid_fd = open("/dev/v4l-subdev3", O_RDWR | O_NONBLOCK);
