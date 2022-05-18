@@ -20,9 +20,7 @@ int main()
   // init udp socket
   int sockfd;
   sockfd = socket(AF_INET, SOCK_DGRAM, 0);
-
   struct sockaddr_in serv, client;
-
   serv.sin_family = AF_INET;
   serv.sin_addr.s_addr = inet_addr(UDP_HOST);
   serv.sin_port = htons(UDP_PORT);
@@ -37,10 +35,6 @@ int main()
   std::string endpoint = "controls";
   Context * context = Context::create();
   PubSocket *publisher = PubSocket::create(context, endpoint);
-
-
-  // dummy message
-  char msg[] = "s00070#";
 
   // init data container
   char buffer[BUF_MAX];
