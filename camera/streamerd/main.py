@@ -1,5 +1,6 @@
 import os
 import sys
+import time
 import numpy as np
 
 import cereal.messaging as messaging
@@ -10,10 +11,12 @@ file_io = "/data/lte-rover/vid-io"
 # os.environ["ZMQ"] = "1"
 
 def extract_image(buf, w, h, stride):
+  start = time.time()
   img = np.hstack([buf[i * stride:i * stride + 3 * w] for i in range(h)])
   b = img[::3].reshape(h, w)
   g = img[1::3].reshape(h, w)
   r = img[2::3].reshape(h, w)
+  print(time.time() - start)
   return np.dstack([b, g, r])
 
 if __name__ == "__main__":
@@ -25,32 +28,30 @@ if __name__ == "__main__":
     # os.mkfifo(file_io)
 
   print("opening file")
-  # f = open(file_io, "wb") # read/write
+  f = open(file_io, "wb") # read/write
   print("loop")
 
   # sub socket
-  sm = messaging.SubMaster(["wideRoadCameraState"])
+  sm = messaging.SubMaster(["roadCameraState"])
 
   # visionipc
   print(VisionStreamType.VISION_STREAM_RGB_BACK)
   vipc_client = VisionIpcClient("camerad", VisionStreamType.VISION_STREAM_RGB_BACK, True)
 
   vipc_client.connect(True)
-  # exit()
 
   while 1:
     sm.update()
-    if sm.updated["wideRoadCameraState"]:
-      print("updated")
-      bgr_raw = sm["wideRoadCameraState"].image
+    if sm.updated["roadCameraState"]:
+      bgr_raw = sm["roadCameraState"].image
       print(len(bgr_raw))
 
-      # frame = vipc_client.recv()
+      frame = vipc_client.recv()
       print(len(frame))
-      # print("width:", vipc_client.width)
-      # print("height:", vipc_client.height)
-      # print("stride:", vipc_client.stride)
+      print("width:", vipc_client.width)
+      print("height:", vipc_client.height)
+      print("stride:", vipc_client.stride)
 
-      # f.write(extract_image(frame, vipc_client.width, vipc_client.height, vipc_client.stride))
-      # f.write(frame)
-      # f.flush()
+      f.write(extract_image(frame, vipc_client.width, vipc_client.height, vipc_client.stride))
+      # f.write(bgr_raw)
+      f.flush()
