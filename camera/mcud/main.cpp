@@ -7,34 +7,6 @@
 
 #define MCUD_FREQUENCY 10000 // 100 hertz
 
-int send(CH340 mcu, std::string msg)
-{
-  unsigned char *packet = (unsigned char *)msg.c_str();
-  mcu.bulk_write(EP_DATA_OUT, packet, 7, 1000);
-  return 0;
-}
-
-std::string receive(CH340 &mcu)
-{
-  std::string r;
-  r.reserve(0x1000 + 0x40);
-  unsigned char dat[0x40];
-  while (r.length() < 0x1000) {
-    // int len = mcu.usb_read(225, 1, 0, dat, sizeof(dat), 0);
-    int len = mcu.bulk_read(EP_DATA_IN, dat, sizeof(dat), 0);
-    if (len <= 0) break;
-    r.append((char*)dat, len);
-  }
-  return r;
-}
-
-std::string format_msg(int val)
-{
-  std::stringstream ss;
-  ss << "s000" << val << "#";
-  return ss.str();
-}
-
 int main()
 {
   int err;
@@ -53,11 +25,8 @@ int main()
   SubSocket * subscriber = SubSocket::create(context, "controls");
   subscriber->setTimeout(100);
 
-  // create message
-  unsigned char ret_msg[1024];
-
   // poll sub socket
-  while(true)
+  while(1)
   {
     usleep(MCUD_FREQUENCY);
     // receive msg from subsocket
@@ -74,11 +43,6 @@ int main()
     unsigned char * command = reinterpret_cast<unsigned char *>(raw_command);
     // send command to mcu
     mcu.bulk_write(2, command, 7, 10);
-    usleep(100);
-    // read mcu messages
-    // mcu.usb_bulk_read(130, ret_msg, 100, 100);
-    // std::string mytext(reinterpret_cast<char*>(ret_msg));
-    // std::cout << "return message: " << mytext << std::endl;
   }
 
   return 0;
